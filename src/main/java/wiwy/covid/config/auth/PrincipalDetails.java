@@ -11,45 +11,23 @@ import java.util.Collection;
 import java.util.Map;
 
 @Getter
-public class PrincipalDetails implements UserDetails, OAuth2User {
+public class PrincipalDetails implements UserDetails {
 
     private Member member;
-    private Map<String, Object> attributes;
 
     // 일반 로그인 생성자
     public PrincipalDetails(Member member) {
         this.member = member;
     }
 
-    // OAuth 로그인 생성자
-    public PrincipalDetails(Member member, Map<String, Object> attributes) {
-        this.member = member;
-        this.attributes = attributes;
-    }
-
-    @Override
-    public Map<String, Object> getAttributes() {
-        return attributes;
-    }
-
-    // 잘 안쓰기 때문에 null
-    @Override
-    public String getName() {
-        return null;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        Collection<GrantedAuthority> collect = new ArrayList<>();
-        collect.add(new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return member.getRole();
-            }
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        member.getRoleList().forEach(r-> {
+            authorities.add(() -> r);
         });
-
-        return collect;
+        return authorities;
     }
 
     @Override

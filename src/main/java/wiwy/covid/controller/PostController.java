@@ -38,6 +38,14 @@ public class PostController {
         return "post/addPostForm";
     }
 
+    @PostMapping("/api/post/add")
+    public Long addPost(@RequestBody Post post, Long boardId) {
+        Board board = boardService.findOne(boardId);
+        Long postId = postService.post(board, post);
+        return postId;
+
+    }
+
     // 특정 게시판에 게시글 생성
     @PostMapping("/{boardId}/add")
     public String postAddPost(@PathVariable Long boardId, Post post, RedirectAttributes redirectAttributes) {

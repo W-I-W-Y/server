@@ -11,6 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Getter @Setter
@@ -25,13 +28,17 @@ public class Member {
     private String password;
     private String email;
 
-    private String role; // ROLE_USER, ROLE_ADMIN
-
-    private String provider;
-    private String providerId;
+    private String roles; // ROLE_USER, ROLE_ADMIN
 
     @CreationTimestamp
     private Timestamp createDate;
+
+    public List<String> getRoleList() {
+        if (this.roles.length() > 0) {
+            return Arrays.asList(this.roles.split(","));
+        }
+        return new ArrayList<>();
+    }
 
 
     // 빌더를 만들었기 때문에 기본 생성자가 있어야 함. 접근제한을 위해 protected 사용
@@ -40,13 +47,11 @@ public class Member {
     }
 
     @Builder
-    public Member(String username, String password, String email, String role, String provider, String providerId, Timestamp createDate) {
+    public Member(String username, String password, String email, String roles, Timestamp createDate) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role;
-        this.provider = provider;
-        this.providerId = providerId;
+        this.roles = roles;
         this.createDate = createDate;
     }
 }
