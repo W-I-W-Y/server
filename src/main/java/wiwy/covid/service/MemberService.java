@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wiwy.covid.domain.Member;
 import wiwy.covid.repository.MemberRepository;
-import wiwy.covid.repository.MemberRepositoryImpl;
 
 
 import java.util.List;
