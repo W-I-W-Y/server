@@ -22,7 +22,8 @@ import wiwy.covid.repository.MemberRepository;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CorsConfig corsConfig;
+    @Autowired
+    private CorsConfig corsConfig;
     private final MemberRepository memberRepository;
 
     // 해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다.
