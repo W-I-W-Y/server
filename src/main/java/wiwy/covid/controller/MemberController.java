@@ -22,7 +22,7 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/join")
+    @PostMapping("/api/join")
     public String join(@RequestBody Member member) {
         memberService.join(member);
         return "회원가입 완료";
