@@ -34,7 +34,7 @@ public class MemberService  {
     public Long join(Member member) {
         validateDuplicateMember(member);
 
-        member.setRole("ROLE_USER");
+        member.setRoles("ROLE_USER");
         String rawPassword = member.getPassword();
         String encPassword = bCryptPasswordEncoder.encode(rawPassword);
         member.setPassword(encPassword);

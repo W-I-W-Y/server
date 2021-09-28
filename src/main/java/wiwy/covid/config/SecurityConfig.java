@@ -15,7 +15,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.filter.CorsFilter;
 import wiwy.covid.config.jwt.JwtAuthenticationFilter;
 import wiwy.covid.config.jwt.JwtAuthorizationFilter;
-import wiwy.covid.config.oauth.PrincipalOauth2UserService;
 import wiwy.covid.repository.MemberRepository;
 
 @Configuration

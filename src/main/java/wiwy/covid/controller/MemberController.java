@@ -16,43 +16,21 @@ import wiwy.covid.service.MemberService;
 
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
-    // 회원 조회 매핑
-    @GetMapping("/member/info")
-    public String member(@AuthenticationPrincipal PrincipalDetails principalDetails, Model model) {
-        Member currentMember = principalDetails.getMember();
-        log.debug("currentMember = {}", currentMember);
-        model.addAttribute("member", currentMember);
-
-        return "member/memberInfo";
-    }
-
-    @GetMapping("/loginForm")
-    public String loginForm() {
-        return "member/signIn";
-    }
-
-    @GetMapping("/joinForm")
-    public String joinForm() { return "member/signUp"; };
-
-    @PostMapping("/addMember")
-    public String addMember(Member member) {
+    @PostMapping("/join")
+    public String join(@RequestBody Member member) {
         memberService.join(member);
-        return "redirect:/loginForm";
+        return "회원가입 완료";
     }
 
-
-
-
-    @GetMapping("/denied")
-    @ResponseBody
-    public String deniedView() {
-        return "denied";
+    @GetMapping("/api/member")
+    public String member() {
+        return "member";
     }
 
 }
