@@ -69,6 +69,19 @@ public class PostController {
         return "addPost";
     }
 
+    // 작성한 포스트 수정
+    @PatchMapping("/api/post/modify/{postId}")
+    public String modifyPost(@PathVariable Long postId, Authentication authentication, @RequestBody PostInputDTO postInputDTO) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<Post> findPost = postRepository.findById(postId);
+        if (findPost.isEmpty()) {
+            throw new IllegalStateException("modifyPost : 존재하지 않는 게시글입니다.");
+        }
+        Post modifiedPost = findPost.get().modify(postInputDTO);
+        postRepository.save(modifiedPost);
+        return "modifyPost";
+    }
+
     // 포스트 삭제
     @PostMapping("/api/post/delete/{postId}")
     public String deletePost(@PathVariable Long postId) {

@@ -60,6 +60,12 @@ public class Post {
         this.board = board;
     }
 
+    public Post modify(PostInputDTO postInputDTO) {
+        this.postName = postInputDTO.getPostName();
+        this.content = postInputDTO.getContent();
+        return this;
+    }
+
 
     private static class TIME_MAXIMUM {
 
