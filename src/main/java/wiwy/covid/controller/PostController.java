@@ -23,6 +23,8 @@ public class PostController {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+    private final LikePostRepository likePostRepository;
+    private final HatePostRepository hatePostRepository;
 
 
     // 특정 포스트 보기
@@ -101,43 +103,57 @@ public class PostController {
             throw new IllegalStateException("likePost : 존재하지 않는 게시글입니다.");
         }
         Member member = memberService.getMemberFromToken(authentication);
+        Post post = findPost.get();
 
-        // 이미 이 사람이 좋아요를 눌렀었는지 확인
-        if (member.isLikePost(postId)) { // 이미 좋아요를 누름 -> 좋아요 취소
-            member.removeLikePost(postId);
-            findPost.get().minusLike();
-            postRepository.save(findPost.get());
-            return "cancelLike";
-        } else { // 안눌렀다면 -> 좋아요
-            member.addLikePost(postId);
-            findPost.get().plusLike();
-            postRepository.save(findPost.get());
-            return "submitLike";
+        // 1. 이 게시글에 좋아요가 있는지 확인
+        List<LikePost> findLP = likePostRepository.findByPostId(post.getId());
+        if (findLP == null || findLP.isEmpty()) { // 좋아요가 없는 게시글 일 때
+            LikePost likePost = new LikePost(member.getId(), post.getId());
+            likePostRepository.save(likePost);
+        } else { // 좋아요가 있는 게시글 일 때
+            for (LikePost lp : findLP) {
+                if (lp.getMemberId() == member.getId()) { // 이미 좋아요를 누른 게시글 일 때 -> 좋아요 취소
+                    likePostRepository.delete(lp);
+                    post.minusLike();
+                    return "cancelLike";
+                }
+            }
+            // 좋아요 누름
+            LikePost likePost = new LikePost(member.getId(), post.getId());
+            likePostRepository.save(likePost);
         }
-
+        post.plusLike();
+        return "submitLike";
     }
 
     // 게시글 싫어요
-    @PatchMapping("/api/post/like/{postId}")
+    @PatchMapping("/api/post/hate/{postId}")
     public String hatePost(@PathVariable Long postId, Authentication authentication) {
         Optional<Post> findPost = postRepository.findById(postId);
         if (findPost.isEmpty()) {
-            throw new IllegalStateException("likePost : 존재하지 않는 게시글입니다.");
+            throw new IllegalStateException("hatePost : 존재하지 않는 게시글입니다.");
         }
         Member member = memberService.getMemberFromToken(authentication);
+        Post post = findPost.get();
 
-        // 이미 이 사람이 싫어요를 눌렀었는지 확인
-        if (member.isHatePost(postId)) { // 이미 싫어요를 누름 -> 싫어요 취소
-            member.removeHatePost(postId);
-            findPost.get().minusHate();
-            postRepository.save(findPost.get());
-            return "cancelHate";
-        } else { // 안눌렀다면 -> 싫어요
-            member.addHatePost(postId);
-            findPost.get().plusHate();
-            postRepository.save(findPost.get());
-            return "submitHate";
+        // 1. 이 게시글에 싫어요가 있는지 확인
+        List<HatePost> findHP = hatePostRepository.findByPostId(post.getId());
+        if (findHP == null || findHP.isEmpty()) { // 싫어요가 없는 게시글 일 때
+            HatePost hatePost = new HatePost(member.getId(), post.getId());
+            hatePostRepository.save(hatePost);
+        } else { // 싫어요가 있는 게시글 일 때
+            for (HatePost hp : findHP) {
+                if (hp.getMemberId() == member.getId()) { // 이미 싫어요를 누른 게시글 일 때 -> 싫어요 취소
+                    hatePostRepository.delete(hp);
+                    post.minusHate();
+                    return "cancelHate";
+                }
+            }
+            // 싫어요 누름
+            HatePost hatePost = new HatePost(member.getId(), post.getId());
+            hatePostRepository.save(hatePost);
         }
-
+        post.plusHate();
+        return "submitHate";
     }
 }
