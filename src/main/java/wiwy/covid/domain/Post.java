@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Getter @Setter
+@Getter
 public class Post {
 
     @Id @GeneratedValue
@@ -64,6 +64,18 @@ public class Post {
         this.postName = postInputDTO.getPostName();
         this.content = postInputDTO.getContent();
         return this;
+    }
+    public void plusLike() {
+        this.likes += 1;
+    }
+    public void minusLike() {
+        this.likes -= 1;
+    }
+    public void plusHate() {
+        this.hates += 1;
+    }
+    public void minusHate() {
+        this.hates -= 1;
     }
 
 

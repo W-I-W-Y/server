@@ -8,9 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
-import wiwy.covid.repository.BoardRepository;
-import wiwy.covid.repository.CommentRepository;
-import wiwy.covid.repository.PostRepository;
+import wiwy.covid.repository.*;
 import wiwy.covid.service.MemberService;
 
 import java.util.List;
@@ -25,6 +23,7 @@ public class PostController {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
+
 
     // 특정 포스트 보기
     @GetMapping("/api/post/view/{postId}")
@@ -92,5 +91,53 @@ public class PostController {
         } else {
             throw new IllegalStateException("deletePost : 존재하지 않는 게시글입니다.");
         }
+    }
+
+    // 게시글 좋아요
+    @PatchMapping("/api/post/like/{postId}")
+    public String likePost(@PathVariable Long postId, Authentication authentication) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        if (findPost.isEmpty()) {
+            throw new IllegalStateException("likePost : 존재하지 않는 게시글입니다.");
+        }
+        Member member = memberService.getMemberFromToken(authentication);
+
+        // 이미 이 사람이 좋아요를 눌렀었는지 확인
+        if (member.isLikePost(postId)) { // 이미 좋아요를 누름 -> 좋아요 취소
+            member.removeLikePost(postId);
+            findPost.get().minusLike();
+            postRepository.save(findPost.get());
+            return "cancelLike";
+        } else { // 안눌렀다면 -> 좋아요
+            member.addLikePost(postId);
+            findPost.get().plusLike();
+            postRepository.save(findPost.get());
+            return "submitLike";
+        }
+
+    }
+
+    // 게시글 싫어요
+    @PatchMapping("/api/post/like/{postId}")
+    public String hatePost(@PathVariable Long postId, Authentication authentication) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        if (findPost.isEmpty()) {
+            throw new IllegalStateException("likePost : 존재하지 않는 게시글입니다.");
+        }
+        Member member = memberService.getMemberFromToken(authentication);
+
+        // 이미 이 사람이 싫어요를 눌렀었는지 확인
+        if (member.isHatePost(postId)) { // 이미 싫어요를 누름 -> 싫어요 취소
+            member.removeHatePost(postId);
+            findPost.get().minusHate();
+            postRepository.save(findPost.get());
+            return "cancelHate";
+        } else { // 안눌렀다면 -> 싫어요
+            member.addHatePost(postId);
+            findPost.get().plusHate();
+            postRepository.save(findPost.get());
+            return "submitHate";
+        }
+
     }
 }

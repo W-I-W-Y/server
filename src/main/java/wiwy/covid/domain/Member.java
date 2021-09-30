@@ -33,6 +33,41 @@ public class Member {
     @CreationTimestamp
     private Timestamp createDate;
 
+    private List<Long> likesPost = new ArrayList<>();
+    private List<Long> hatesPost = new ArrayList<>();
+
+    // 사용자가 해당 게시글에 좋아요를 눌렀는지 체크하는 메소드
+    public boolean isLikePost(Long postId) {
+        if (this.likesPost.contains(postId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void addLikePost(Long postId) {
+        this.likesPost.add(postId);
+    }
+    public void removeLikePost(Long postId) {
+         this.likesPost.remove(postId);
+    }
+
+    // 사용자가 해당 게시글에 싫어요를 눌렀는지 체크하는 메소드
+    public boolean isHatePost(Long postId) {
+        if (this.hatesPost.contains(postId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void addHatePost(Long postId) {
+        this.hatesPost.add(postId);
+    }
+    public void removeHatePost(Long postId) {
+        this.hatesPost.remove(postId);
+    }
+
     public List<String> getRoleList() {
         if (this.roles.length() > 0) {
             return Arrays.asList(this.roles.split(","));
