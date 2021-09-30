@@ -3,12 +3,9 @@ package wiwy.covid.domain;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedBy;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +27,7 @@ public class Post {
     private int viewCnt;
 
     private int likes;
+    private int hates;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -49,33 +47,19 @@ public class Post {
         comment.setPost(this);
     }
 
-    private Post() {
+    protected Post() {
     }
 
-    public Post(PostDTO postDTO, Member member, Board board) {
+    public Post(PostInputDTO postDTO, Member member, Board board) {
+        this.viewCnt = 0;
+        this.likes = 0;
+        this.hates = 0;
         this.postName = postDTO.getPostName();
         this.content = postDTO.getContent();
         this.member = member;
         this.board = board;
     }
 
-    public static Post makePost(Member member, String postName, String content) {
-        Post post = new Post();
-        post.setPostName(postName);
-        post.setContent(content);
-        post.setMember(member);
-
-        return post;
-    }
-
-    public static Post makePost(Board board, String postName, String content) {
-        Post post = new Post();
-        post.setBoard(board);
-        post.setPostName(postName);
-        post.setContent(content);
-
-        return post;
-    }
 
     private static class TIME_MAXIMUM {
 

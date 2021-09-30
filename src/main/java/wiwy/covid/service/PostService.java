@@ -17,19 +17,19 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    @Transactional
-    public Long post(Board board, Post p) {
-        Post newPost = Post.makePost(board, p.getPostName(), p.getContent());
-        postRepository.save(newPost);
-        return newPost.getId();
-    }
-
-
-
-    public Page<Post> pagingPosts (Long boardId, int page, int perPageNum) {
-        PageRequest request = PageRequest.of(page, perPageNum, Sort.by("createTime").descending());
-        return postRepository.findByBoardId(boardId, request);
-    }
+//    @Transactional
+//    public Long post(Board board, Post p) {
+//        Post newPost = Post.makePost(board, p.getPostName(), p.getContent());
+//        postRepository.save(newPost);
+//        return newPost.getId();
+//    }
+//
+//
+//
+//    public Page<Post> pagingPosts (Long boardId, int page, int perPageNum) {
+//        PageRequest request = PageRequest.of(page, perPageNum, Sort.by("createTime").descending());
+//        return postRepository.findByBoardId(boardId, request);
+//    }
 
 
 }

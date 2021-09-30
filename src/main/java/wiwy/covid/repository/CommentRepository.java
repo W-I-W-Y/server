@@ -1,29 +1,20 @@
 package wiwy.covid.repository;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import wiwy.covid.domain.Comment;
+import wiwy.covid.domain.Member;
+import wiwy.covid.domain.Post;
 
-import javax.persistence.EntityManager;
+import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
-public class CommentRepository {
+public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    private final EntityManager em;
+    Page<Comment> findByMember(Member member, Pageable pageable);
 
-    public void save(Comment comment) {
-        em.persist(comment);
-    }
-
-    public Comment findById(Long commentId) {
-        return em.find(Comment.class, commentId);
-    }
-
-    public Long delete(Long commentId) {
-        Comment comment = findById(commentId);
-        em.remove(comment);
-        return commentId;
-    }
+    List<Comment> findByPost(Post post);
 
 }

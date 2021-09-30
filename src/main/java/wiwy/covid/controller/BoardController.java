@@ -1,7 +1,6 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.Board;
 import wiwy.covid.domain.BoardDTO;
 import wiwy.covid.domain.Post;
-import wiwy.covid.domain.PostDTOByMember;
+import wiwy.covid.domain.PostOutputDTO;
 import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
 
@@ -58,7 +57,7 @@ public class BoardController {
 
     // 해당 게시판의 게시글 목록 보기
     @GetMapping("/api/board/{boardId}/view/{pageNum}")
-    public List<PostDTOByMember> viewPostOnBoard(@PathVariable Long boardId, @PathVariable Integer pageNum) {
+    public List<PostOutputDTO> viewPostOnBoard(@PathVariable Long boardId, @PathVariable Integer pageNum) {
         Optional<Board> findBoard = boardRepository.findById(boardId);
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewPostOnBoard : 존재하지 않는 게시판입니다.");
@@ -66,13 +65,13 @@ public class BoardController {
         if (pageNum == null) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
-            List<PostDTOByMember> postDTOs = posts.stream().map(post -> new PostDTOByMember(post)).collect(Collectors.toList());
+            List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
 
         } else {
             Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
-            List<PostDTOByMember> postDTOs = posts.stream().map(post -> new PostDTOByMember(post)).collect(Collectors.toList());
+            List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
         }
     }

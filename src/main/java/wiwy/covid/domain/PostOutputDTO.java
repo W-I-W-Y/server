@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class PostDTOByMember {
+public class PostOutputDTO {
 
     private Long id;
     private String postName;
@@ -18,11 +18,12 @@ public class PostDTOByMember {
     private Timestamp createTime;
     private int viewCnt;
     private int likes;
+    private int hates;
     private String username;
     private String boardName;
     private int comCounts; // 댓글 수
 
-    public PostDTOByMember(Post post) {
+    public PostOutputDTO(Post post) {
         this.id = post.getId();
         this.postName = post.getPostName();
         this.content = post.getContent();
@@ -30,6 +31,7 @@ public class PostDTOByMember {
         this.createTime = post.getCreateTime();
         this.viewCnt = post.getViewCnt();
         this.likes = post.getLikes();
+        this.hates = post.getHates();
         this.username = post.getMember().getUsername();
         this.boardName = post.getBoard().getBoardName();
         this.comCounts = post.getComments().size();
