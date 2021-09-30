@@ -11,6 +11,7 @@ import wiwy.covid.domain.*;
 import wiwy.covid.repository.*;
 import wiwy.covid.service.MemberService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -155,5 +156,37 @@ public class PostController {
         }
         post.plusHate();
         return "submitHate";
+    }
+
+    // 좋아요를 누른 게시글 목록 보기
+    @GetMapping("/api/post/likeByMember")
+    public List<PostOutputDTO> likePostByMember(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        List<LikePost> likePosts = likePostRepository.findByMemberId(member.getId());
+        List<PostOutputDTO> posts = new ArrayList<>();
+        for (LikePost likePost : likePosts) {
+            Optional<Post> findPost = postRepository.findById(likePost.getPostId());
+            if (findPost.isPresent()) {
+                PostOutputDTO postOutputDTO = new PostOutputDTO(findPost.get());
+                posts.add(postOutputDTO);
+            }
+        }
+        return posts;
+    }
+
+    // 싫어요를 누른 게시글 목록 보기
+    @GetMapping("/api/post/hateByMember")
+    public List<PostOutputDTO> hatePostByMember(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        List<HatePost> hatePosts = hatePostRepository.findByMemberId(member.getId());
+        List<PostOutputDTO> posts = new ArrayList<>();
+        for (HatePost hatePost : hatePosts) {
+            Optional<Post> findPost = postRepository.findById(hatePost.getPostId());
+            if (findPost.isPresent()) {
+                PostOutputDTO postOutputDTO = new PostOutputDTO(findPost.get());
+                posts.add(postOutputDTO);
+            }
+        }
+        return posts;
     }
 }
