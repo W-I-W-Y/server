@@ -18,4 +18,11 @@ public class Board {
     private String boardName;
     private String description;
 
+    protected Board() {
+    }
+
+    public Board(BoardDTO boardDTO) {
+        this.boardName = boardDTO.getBoardName();
+        this.description = boardDTO.getDescription();
+    }
 }

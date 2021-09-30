@@ -1,59 +1,63 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wiwy.covid.domain.Board;
-import wiwy.covid.domain.Post;
-import wiwy.covid.service.BoardService;
-import wiwy.covid.service.PostService;
+import wiwy.covid.domain.*;
+import wiwy.covid.repository.BoardRepository;
+import wiwy.covid.repository.PostRepository;
+import wiwy.covid.service.MemberService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Controller
 @RequiredArgsConstructor
+@RestController
 public class PostController {
 
-    private final BoardService boardService;
-    private final PostService postService;
+    private final MemberService memberService;
+    private final PostRepository postRepository;
+    private final BoardRepository boardRepository;
 
-    // 특정 게시판에 존재하는 특정 게시글 보기
-    @GetMapping("/{boardId}/view/{postId}")
-    public String viewPost(@PathVariable Long boardId, @PathVariable Long postId, Model model) {
-        Board board = boardService.findOne(boardId);
-        Post post = postService.findOne(postId);
-
-        model.addAttribute("board", board);
-        model.addAttribute("post", post);
-        return "post/post_main";
+    // 특정 포스트 보기
+    @GetMapping("/api/post/view/{postId}")
+    public PostDTOByMember viewPost(@PathVariable Long postId) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        if (findPost.isPresent()) {
+            return new PostDTOByMember(findPost.get());
+        } else {
+            throw new IllegalStateException("viewPost : 존재하지 않는 게시글입니다.");
+        }
     }
 
-    // 특정 게시판에 게시글 생성
-    @GetMapping("/{boardId}/add")
-    public String getAddPost() {
-        return "post/addPostForm";
+    // 한 유저가 작성한 포스트 전체 보기
+    @GetMapping("/api/post/viewByMember")
+    public List<PostDTOByMember> viewPostByMember(Authentication authentication) {
+        Member findMember = memberService.getMemberFromToken(authentication);
+        List<Post> posts = postRepository.findByMember(findMember);
+        List<PostDTOByMember> collect = posts.stream().map(post -> new PostDTOByMember(post)).collect(Collectors.toList());
+        return collect;
     }
 
-    @PostMapping("/api/post/add")
-    public Long addPost(@RequestBody Post post, Long boardId) {
-        Board board = boardService.findOne(boardId);
-        Long postId = postService.post(board, post);
-        return postId;
-
+    // 해당 게시판에 포스트 작성
+    @PostMapping("/api/post/add/{boardId}")
+    public String addPost(@PathVariable Long boardId, @RequestBody PostDTO postDTO, Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+        postRepository.save(new Post(postDTO, member, findBoard.get()));
+        return "addPost";
     }
 
-    // 특정 게시판에 게시글 생성
-    @PostMapping("/{boardId}/add")
-    public String postAddPost(@PathVariable Long boardId, Post post, RedirectAttributes redirectAttributes) {
-        Board board = boardService.findOne(boardId);
-        Long postId = postService.post(board, post);
-        redirectAttributes.addAttribute("boardId", boardId);
-        redirectAttributes.addAttribute("postId",postId);
-        return "redirect:/{boardId}/view/{postId}";
+    // 포스트 삭제
+    @PostMapping("/api/post/delete/{postId}")
+    public String deletePost(@PathVariable Long postId) {
+        Optional<Post> findPost = postRepository.findById(postId);
+        if (findPost.isPresent()) {
+            postRepository.deleteById(postId);
+            return "deletePost";
+        } else {
+            throw new IllegalStateException("deletePost : 존재하지 않는 게시글입니다.");
+        }
     }
-
 }

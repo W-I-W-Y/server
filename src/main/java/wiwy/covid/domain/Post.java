@@ -52,9 +52,11 @@ public class Post {
     private Post() {
     }
 
-    public Post(String postName, String content) {
-        this.postName = postName;
-        this.content = content;
+    public Post(PostDTO postDTO, Member member, Board board) {
+        this.postName = postDTO.getPostName();
+        this.content = postDTO.getContent();
+        this.member = member;
+        this.board = board;
     }
 
     public static Post makePost(Member member, String postName, String content) {

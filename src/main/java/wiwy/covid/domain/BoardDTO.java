@@ -11,5 +11,6 @@ import java.util.List;
 @Getter @Setter
 public class BoardDTO {
 
-    private Page<PostDTO> posts;
+    private String boardName;
+    private String description;
 }

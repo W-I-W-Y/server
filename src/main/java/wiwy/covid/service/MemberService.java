@@ -10,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 //import org.springframework.security.core.userdetails.UserDetailsService;
 //import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import wiwy.covid.config.auth.PrincipalDetails;
 import wiwy.covid.domain.Member;
 import wiwy.covid.repository.MemberRepository;
 
@@ -51,30 +53,8 @@ public class MemberService  {
         }
     }
 
-    public List<Member> findMembers() {
-        return memberRepository.findAll();
+    public Member getMemberFromToken(Authentication authentication) {
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        return principalDetails.getMember();
     }
-
-    public Member findByUsername(String username) {
-        Optional<Member> byUsername = memberRepository.findByUsername(username);
-        if (byUsername.isPresent()) {
-            Member member = byUsername.get();
-            return member;
-        } else {
-            return null;
-        }
-    }
-
-    public Member findOne(Long memberId) {
-        Optional<Member> findMember = memberRepository.findById(memberId);
-        if (findMember.isEmpty()) {
-            throw new IllegalStateException("찾는 회원이 존재하지 않습니다.");
-        }
-        return findMember.get();
-    }
-
-    public void deleteMember(Long memberId) {
-        memberRepository.deleteById(memberId);
-    }
-
 }

@@ -1,142 +1,79 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.*;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import wiwy.covid.domain.*;
-import wiwy.covid.paging.BoardPaging;
-import wiwy.covid.paging.Paging;
+import wiwy.covid.domain.Board;
+import wiwy.covid.domain.BoardDTO;
+import wiwy.covid.domain.Post;
+import wiwy.covid.domain.PostDTOByMember;
+import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
-import wiwy.covid.service.BoardService;
-import wiwy.covid.service.MemberService;
-import wiwy.covid.service.PostService;
 
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Controller
 @RequiredArgsConstructor
+@RestController
 public class BoardController {
 
-    private final MemberService memberService;
-    private final BoardService boardService;
-    private final PostService postService;
-    private final BoardPaging boardPaging;
+    private final BoardRepository boardRepository;
     private final PostRepository postRepository;
 
-    @ResponseBody
-    @GetMapping("/api/community/main")
-    public BoardDTO communityMain() {
-        List<Board> boards = boardService.findAllBoards();
-        BoardDTO boardDTO = new BoardDTO();
-        for (Board board : boards) {
-            Pageable page = PageRequest.of(0, 5, Sort.by("createTime").descending());
-            Page<Post> pagingPosts = postRepository.findByBoard(board, page);
-            List<PostDTO> postDTOList = pagingPosts.stream().map(pagingPost -> new PostDTO(pagingPost, pagingPost.getMember().getUsername())).collect(Collectors.toList());
-            PageImpl<PostDTO> postDTOS = new PageImpl<>(postDTOList, page, pagingPosts.getTotalElements());
-            boardDTO.setPosts(postDTOS);
+    // 게시판 추가하기
+    @PostMapping("/api/board/add")
+    public String addBoard(@RequestBody BoardDTO boardDTO) {
+        Optional<Board> findBoard = boardRepository.findByBoardName(boardDTO.getBoardName());
+        if (findBoard.isPresent()) {
+            throw new IllegalStateException("이름이 중복인 게시판입니다.");
+        } else {
+            boardRepository.save(new Board(boardDTO));
+            return "addBoard";
         }
-        return boardDTO;
     }
 
-//    @GetMapping("/co")
-//    public String viewAllBoards(@RequestParam(required = false) Long memberId, Model model) {
-//
-//        if(memberId != null) {
-//            Member member = memberService.findOne(memberId);
-//            model.addAttribute("member", member);
-//        }
-//
-//
-//        List<Board> boards = boardService.findAllBoards();
-//        List<BoardDTO> boardDTOS = new ArrayList<>();
-//        for (Board board : boards) {
-//            List<PostDTO> postDTOS = new ArrayList<>();
-//            BoardDTO boardDTO = new BoardDTO();
-//            Page<Post> posts = postService.pagingPosts(board.getId(), 0, 5);
-//            for (Post post : posts) {
-//                PostDTO postDTO = new PostDTO();
-//                postDTO.setPost(post);
-//                postDTO.setPostTime(post.calculateTime(post.getCreateTime()));
-//                postDTOS.add(postDTO);
-//            }
-//            boardDTO.setBoard(board);
-//            boardDTO.setPostDTOS(postDTOS);
-//            boardDTOS.add(boardDTO);
-//        }
-//        model.addAttribute("boardDTOS", boardDTOS);
-//
-//        return "board/community";
-//    }
-//
-//    // 특정 게시판 보기
-//    @GetMapping("/{boardId}")
-//    public String viewOneBoard(@PathVariable Long boardId, Model model) {
-//        Board board = boardService.findOne(boardId);
-//        Page<Post> posts = postService.pagingPosts(boardId, 0, 10);
-//
-//        List<PostDTO> postDTOS = new ArrayList<>();
-//        for (Post post : posts) {
-//            PostDTO postDTO = new PostDTO();
-//            postDTO.setPost(post);
-//            postDTO.setPostTime(post.calculateTime(post.getCreateTime()));
-//            postDTOS.add(postDTO);
-//        }
-//        model.addAttribute("board",board);
-//        model.addAttribute("postDTOS", postDTOS);
-//
-//
-//        return "board/board_main";
-//    }
+    // 게시판 목록 보기
+    @GetMapping("/api/board/view")
+    public List<Board> viewBoard() {
+        return boardRepository.findAll();
+    }
 
-//    // 게시판 페이징
-//    @GetMapping("/{boardId}/page/{pageNum}")
-//    public String viewPage(@PathVariable Long boardId, @PathVariable int pageNum, Model model) {
-//        Board board = boardService.findOne(boardId);
-//        List<Post> posts = postService.findPostsByBoardId(boardId);
-//
-//        Page<Post> returnPosts = postService.pagingPosts(boardId, pageNum, 10);
-//
-//        List<PostDTO> postDTOS = new ArrayList<>();
-//        for (Post post : returnPosts) {
-//            PostDTO postDTO = new PostDTO();
-//            postDTO.setPost(post);
-//            postDTO.setPostTime(post.calculateTime(post.getCreateTime()));
-//            postDTOS.add(postDTO);
-//        }
-//
-//        model.addAttribute("board", board);
-//        model.addAttribute("postDTOS", postDTOS);
-//
-//
-//        return "/board/main";
-//    }
-//
-//    @GetMapping("/board/add")
-//    public String getEditBoard() {
-//        return "board/addBoardForm";
-//    }
-//
-//    @PostMapping("/board/add")
-//    public String postEditBoard(Board board, RedirectAttributes redirectAttributes) {
-//        try {
-//            Long boardId = boardService.makeBoard(board);
-//            redirectAttributes.addAttribute("boardId", boardId);
-//        } catch (IllegalStateException e) {
-//            redirectAttributes.addAttribute("dup",true);
-//            return "redirect:/addBoard";
-//        }
-//
-//        return "redirect:/{boardId}";
-//    }
+    // 게시판 삭제하기
+    @PostMapping("/api/board/delete")
+    public String deleteBoard(@RequestBody String boardName) {
+        Optional<Board> findBoard = boardRepository.findByBoardName(boardName);
+        if (findBoard.isPresent()) {
+            boardRepository.delete(findBoard.get());
+            return "deleteBoard";
+        }
+        else {
+            throw new IllegalStateException("해당 게시판이 존재하지 않습니다.");
+        }
+    }
 
+    // 해당 게시판의 게시글 목록 보기
+    @GetMapping("/api/board/{boardId}/view/{pageNum}")
+    public List<PostDTOByMember> viewPostOnBoard(@PathVariable Long boardId, @PathVariable Integer pageNum) {
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+        if (findBoard.isEmpty()) {
+            throw new IllegalStateException("viewPostOnBoard : 존재하지 않는 게시판입니다.");
+        }
+        if (pageNum == null) {
+            Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+            Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+            List<PostDTOByMember> postDTOs = posts.stream().map(post -> new PostDTOByMember(post)).collect(Collectors.toList());
+            return postDTOs;
 
+        } else {
+            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+            List<PostDTOByMember> postDTOs = posts.stream().map(post -> new PostDTOByMember(post)).collect(Collectors.toList());
+            return postDTOs;
+        }
+    }
 }
