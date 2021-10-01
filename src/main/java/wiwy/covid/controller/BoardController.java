@@ -1,6 +1,7 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,10 +14,12 @@ import wiwy.covid.domain.PostOutputDTO;
 import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class BoardController {
@@ -44,9 +47,16 @@ public class BoardController {
 
     // 게시판 삭제하기
     @DeleteMapping("/api/board/delete")
-    public String deleteBoard(@RequestBody String boardName) {
-        Optional<Board> findBoard = boardRepository.findByBoardName(boardName);
+    public String deleteBoard(@RequestBody BoardDTO boardDTO) {
+        Optional<Board> findBoard = boardRepository.findByBoardName(boardDTO.getBoardName());
+        log.info("findBoard = {}", findBoard.get().getBoardName());
         if (findBoard.isPresent()) {
+            List<Post> posts = postRepository.findByBoard(findBoard.get());
+            List<Long> ids = new ArrayList<>();
+            for (Post post : posts) {
+                ids.add(post.getId());
+            }
+            postRepository.deleteAllByIdInQuery(ids);
             boardRepository.delete(findBoard.get());
             return "deleteBoard";
         }
