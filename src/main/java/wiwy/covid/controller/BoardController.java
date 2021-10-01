@@ -43,7 +43,7 @@ public class BoardController {
     }
 
     // 게시판 삭제하기
-    @PostMapping("/api/board/delete")
+    @DeleteMapping("/api/board/delete")
     public String deleteBoard(@RequestBody String boardName) {
         Optional<Board> findBoard = boardRepository.findByBoardName(boardName);
         if (findBoard.isPresent()) {
