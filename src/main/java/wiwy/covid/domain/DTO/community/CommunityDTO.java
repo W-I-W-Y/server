@@ -9,6 +9,7 @@ import java.util.List;
 @Getter @Setter
 public class CommunityDTO {
 
+    private Long boardId;
     private String boardName;
     private List<SmallPostDTO> smallPostDTOS = new ArrayList<>();
 }

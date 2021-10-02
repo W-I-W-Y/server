@@ -35,6 +35,7 @@ public class CommunityController {
             List<SmallPostDTO> collect = posts.stream().map(post -> new SmallPostDTO(post)).collect(Collectors.toList());
             CommunityDTO c = new CommunityDTO();
             c.setSmallPostDTOS(collect);
+            c.setBoardId(board.getId());
             c.setBoardName(board.getBoardName());
             communityDTOList.add(c);
         }
