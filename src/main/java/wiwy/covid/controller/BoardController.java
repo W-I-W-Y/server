@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.Board;
-import wiwy.covid.domain.BoardDTO;
+import wiwy.covid.domain.DTO.board.BoardDTO;
 import wiwy.covid.domain.Post;
-import wiwy.covid.domain.PostOutputDTO;
+import wiwy.covid.domain.DTO.post.PostOutputDTO;
 import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
 

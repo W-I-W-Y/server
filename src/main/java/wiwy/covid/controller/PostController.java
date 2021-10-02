@@ -8,6 +8,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
+import wiwy.covid.domain.DTO.comment.CommentOutputDTO;
+import wiwy.covid.domain.DTO.post.PostAndCommentDTO;
+import wiwy.covid.domain.DTO.post.PostInputDTO;
+import wiwy.covid.domain.DTO.post.PostOutputDTO;
 import wiwy.covid.repository.*;
 import wiwy.covid.service.MemberService;
 

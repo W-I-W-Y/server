@@ -1,6 +1,7 @@
-package wiwy.covid.domain;
+package wiwy.covid.domain.DTO.comment;
 
 import lombok.Getter;
+import wiwy.covid.domain.Comment;
 
 import java.sql.Timestamp;
 

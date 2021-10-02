@@ -1,7 +1,8 @@
-package wiwy.covid.domain;
+package wiwy.covid.domain.DTO.post;
 
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
+import wiwy.covid.domain.Post;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

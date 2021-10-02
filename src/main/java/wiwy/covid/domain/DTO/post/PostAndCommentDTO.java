@@ -1,7 +1,8 @@
-package wiwy.covid.domain;
+package wiwy.covid.domain.DTO.post;
 
 import lombok.Getter;
 import lombok.Setter;
+import wiwy.covid.domain.DTO.comment.CommentOutputDTO;
 
 import java.util.ArrayList;
 import java.util.List;

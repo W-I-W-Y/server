@@ -1,4 +1,4 @@
-package wiwy.covid.domain;
+package wiwy.covid.domain.DTO.post;
 
 import lombok.Builder;
 import lombok.Getter;

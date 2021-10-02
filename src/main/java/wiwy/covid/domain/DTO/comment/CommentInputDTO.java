@@ -1,4 +1,4 @@
-package wiwy.covid.domain;
+package wiwy.covid.domain.DTO.comment;
 
 import lombok.Getter;
 import lombok.Setter;
