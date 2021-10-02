@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import wiwy.covid.config.auth.PrincipalDetails;
 import wiwy.covid.domain.Member;
@@ -38,6 +39,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+            System.out.println("authentication = " + authentication);
 
             return authentication;
 
@@ -59,7 +61,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .withClaim("id", principalDetails.getMember().getId())
                 .withClaim("username", principalDetails.getMember().getUsername())
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
+        System.out.println("jwtToken = " + jwtToken);
+        SecurityContextHolder.getContext().setAuthentication(authResult);
 
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
+        System.out.println("response = " + response.getHeaderNames());
     }
 }

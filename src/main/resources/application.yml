@@ -11,14 +11,14 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-    url: jdbc:mysql://localhost:3306/wiwy?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: root1234
+#    url: jdbc:mysql://localhost:3306/wiwy?serverTimezone=UTC&characterEncoding=UTF-8
+#    username: root
+#    password: root1234
 
     #     docker
-#    url: jdbc:mysql://mysql:3306/wiwy?serverTimezone=UTC&characterEncoding=UTF-8
-#    username: wiwy
-#    password: wiwy
+    url: jdbc:mysql://mysql:3306/wiwy?serverTimezone=UTC&characterEncoding=UTF-8
+    username: wiwy
+    password: wiwy
   output:
     ansi:
       enabled: always
