@@ -53,6 +53,7 @@ public class PostController {
             if (isHate.isPresent()) {
                 pac.setHate(true);
             }
+            pac.setBoardId(findPost.get().getBoard().getId());
             pac.setPostOutputDTO(post);
             pac.setCommentOutputDTOS(collect);
             return pac;

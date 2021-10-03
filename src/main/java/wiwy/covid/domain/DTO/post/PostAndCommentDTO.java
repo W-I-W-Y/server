@@ -10,6 +10,7 @@ import java.util.List;
 @Getter @Setter
 public class PostAndCommentDTO {
 
+    private Long boardId;
     private PostOutputDTO postOutputDTO;
     private List<CommentOutputDTO> commentOutputDTOS = new ArrayList<>();
     private boolean isLike = false;
