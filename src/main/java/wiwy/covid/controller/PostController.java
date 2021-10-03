@@ -96,8 +96,12 @@ public class PostController {
         if (findPost.isEmpty()) {
             throw new IllegalStateException("modifyPost : 존재하지 않는 게시글입니다.");
         }
-        Post modifiedPost = findPost.get().modify(postInputDTO);
-        postRepository.save(modifiedPost);
+        if (member.getId().equals(findPost.get().getMember().getId())) {
+            Post modifiedPost = findPost.get().modify(postInputDTO);
+            postRepository.save(modifiedPost);
+        } else {
+            throw new IllegalStateException("modifyPost : 본인이 작성한 게시글만 수정할 수 있습니다.");
+        }
         return "modifyPost";
     }
 
