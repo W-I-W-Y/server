@@ -102,8 +102,21 @@ public class PostController {
     @PostMapping("/api/post/delete/{postId}")
     public String deletePost(@PathVariable Long postId) {
         Optional<Post> findPost = postRepository.findById(postId);
+
         if (findPost.isPresent()) {
+            List<LikePost> likePosts = likePostRepository.findByPostId(postId);
+            List<HatePost> hatePosts = hatePostRepository.findByPostId(postId);
+            List<Long> likeIds = new ArrayList<>();
+            List<Long> hateIds = new ArrayList<>();
+            for (HatePost hatePost : hatePosts) {
+                hateIds.add(hatePost.getId());
+            }
+            for (LikePost likePost : likePosts) {
+                likeIds.add(likePost.getId());
+            }
             postRepository.deleteById(postId);
+            likePostRepository.deleteAllByIdInQuery(likeIds);
+            hatePostRepository.deleteAllByIdInQuery(hateIds);
             return "deletePost";
         } else {
             throw new IllegalStateException("deletePost : 존재하지 않는 게시글입니다.");
