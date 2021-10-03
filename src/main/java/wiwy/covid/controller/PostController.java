@@ -34,13 +34,23 @@ public class PostController {
 
     // 특정 포스트 보기
     @GetMapping("/api/post/view/{postId}")
-    public PostAndCommentDTO viewPost(@PathVariable Long postId) {
+    public PostAndCommentDTO viewPost(@PathVariable Long postId, Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<LikePost> isLike = likePostRepository.findByPostIdAndMemberId(postId, member.getId());
+        Optional<HatePost> isHate = hatePostRepository.findByPostIdAndMemberId(postId, member.getId());
+
         Optional<Post> findPost = postRepository.findById(postId);
         PostAndCommentDTO pac = new PostAndCommentDTO();
         if (findPost.isPresent()) {
             PostOutputDTO post = new PostOutputDTO(findPost.get());
             List<Comment> comments = commentRepository.findByPost(findPost.get());
             List<CommentOutputDTO> collect = comments.stream().map(comment -> new CommentOutputDTO(comment)).collect(Collectors.toList());
+            if (isLike.isPresent()) {
+                pac.setLike(true);
+            }
+            if (isHate.isPresent()) {
+                pac.setHate(true);
+            }
             pac.setPostOutputDTO(post);
             pac.setCommentOutputDTOS(collect);
             return pac;

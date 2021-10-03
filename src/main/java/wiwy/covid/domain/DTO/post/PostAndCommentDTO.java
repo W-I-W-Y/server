@@ -12,4 +12,6 @@ public class PostAndCommentDTO {
 
     private PostOutputDTO postOutputDTO;
     private List<CommentOutputDTO> commentOutputDTOS = new ArrayList<>();
+    private boolean isLike = false;
+    private boolean isHate = false;
 }
