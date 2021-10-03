@@ -59,9 +59,10 @@ public class CommentController {
 
     // 댓글 삭제
     @DeleteMapping("/api/comment/delete/{commentId}")
-    public String deleteComment(@PathVariable Long commentId) {
+    public String deleteComment(@PathVariable Long commentId, Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
         Optional<Comment> findComment = commentRepository.findById(commentId);
-        if (findComment.isPresent()) {
+        if (findComment.isPresent() && member.getId().equals(findComment.get().getMember().getId())) {
             commentRepository.delete(findComment.get());
             return "deleteComment";
         } else {
