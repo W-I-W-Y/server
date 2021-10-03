@@ -47,6 +47,11 @@ public class PostController {
             PostOutputDTO post = new PostOutputDTO(findPost.get());
             List<Comment> comments = commentRepository.findByPost(findPost.get());
             List<CommentOutputDTO> collect = comments.stream().map(comment -> new CommentOutputDTO(comment)).collect(Collectors.toList());
+            for (CommentOutputDTO commentOutputDTO : collect) {
+                if (member.getId().equals(commentOutputDTO.getMemberId())) {
+                    commentOutputDTO.setAuthor(true);
+                }
+            }
             if (isLike.isPresent()) {
                 pac.setLike(true);
             }
