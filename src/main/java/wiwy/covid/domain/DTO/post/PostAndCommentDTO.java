@@ -13,6 +13,7 @@ public class PostAndCommentDTO {
     private Long boardId;
     private PostOutputDTO postOutputDTO;
     private List<CommentOutputDTO> commentOutputDTOS = new ArrayList<>();
+    private boolean isAuthor = false;
     private boolean isLike = false;
     private boolean isHate = false;
 }
