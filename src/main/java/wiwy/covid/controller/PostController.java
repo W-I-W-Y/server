@@ -130,6 +130,7 @@ public class PostController {
                 if (lp.getMemberId() == member.getId()) { // 이미 좋아요를 누른 게시글 일 때 -> 좋아요 취소
                     likePostRepository.delete(lp);
                     post.minusLike();
+                    postRepository.save(post);
                     return "cancelLike";
                 }
             }
@@ -138,6 +139,7 @@ public class PostController {
             likePostRepository.save(likePost);
         }
         post.plusLike();
+        postRepository.save(post);
         return "submitLike";
     }
 
