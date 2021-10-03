@@ -1,6 +1,7 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class PostController {
@@ -140,7 +142,8 @@ public class PostController {
             likePostRepository.save(likePost);
         } else { // 좋아요가 있는 게시글 일 때
             for (LikePost lp : findLP) {
-                if (lp.getMemberId() == member.getId()) { // 이미 좋아요를 누른 게시글 일 때 -> 좋아요 취소
+                if (lp.getMemberId().equals(member.getId())) { // 이미 좋아요를 누른 게시글 일 때 -> 좋아요 취소
+
                     likePostRepository.delete(lp);
                     post.minusLike();
                     postRepository.save(post);
@@ -173,9 +176,10 @@ public class PostController {
             hatePostRepository.save(hatePost);
         } else { // 싫어요가 있는 게시글 일 때
             for (HatePost hp : findHP) {
-                if (hp.getMemberId() == member.getId()) { // 이미 싫어요를 누른 게시글 일 때 -> 싫어요 취소
+                if (hp.getMemberId().equals(member.getId())) { // 이미 싫어요를 누른 게시글 일 때 -> 싫어요 취소
                     hatePostRepository.delete(hp);
                     post.minusHate();
+                    postRepository.save(post);
                     return "cancelHate";
                 }
             }
@@ -184,6 +188,7 @@ public class PostController {
             hatePostRepository.save(hatePost);
         }
         post.plusHate();
+        postRepository.save(post);
         return "submitHate";
     }
 
