@@ -33,6 +33,9 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    protected Comment() {
+    }
+
     public Comment(CommentInputDTO commentInputDTO, Member member, Post post) {
         this.content = commentInputDTO.getContent();
         this.likes = 0;
