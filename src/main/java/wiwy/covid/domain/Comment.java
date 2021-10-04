@@ -44,6 +44,19 @@ public class Comment {
         this.post = post;
     }
 
+    public void plusLike() {
+        this.likes += 1;
+    }
+    public void minusLike() {
+        this.likes -= 1;
+    }
+    public void plusHate() {
+        this.hates += 1;
+    }
+    public void minusHate() {
+        this.hates -= 1;
+    }
+
     private static class TIME_MAXIMUM {
 
         public static final int SEC = 60;

@@ -11,6 +11,8 @@ import wiwy.covid.domain.*;
 import wiwy.covid.domain.DTO.comment.CommentInputDTO;
 import wiwy.covid.domain.DTO.comment.CommentOutputDTO;
 import wiwy.covid.repository.CommentRepository;
+import wiwy.covid.repository.HateCommentRepository;
+import wiwy.covid.repository.LikeCommentRepository;
 import wiwy.covid.repository.PostRepository;
 import wiwy.covid.service.MemberService;
 
@@ -25,6 +27,8 @@ public class CommentController {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final MemberService memberService;
+    private final LikeCommentRepository likeCommentRepository;
+    private final HateCommentRepository hateCommentRepository;
 
     // 댓글 작성
     @PostMapping("/api/comment/add/{postId}")
@@ -70,6 +74,72 @@ public class CommentController {
         }
     }
 
+    // 댓글 좋아요
+    @PatchMapping("/api/comment/like/{commentId}")
+    public String likeComment(@PathVariable Long commentId, Authentication authentication) {
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+        if (findComment.isEmpty()) {
+            throw new IllegalStateException("likeComment : 존재하지 않는 댓글입니다.");
+        }
+        Member member = memberService.getMemberFromToken(authentication);
+        Comment comment = findComment.get();
 
+        // 1. 이 게시글에 좋아요가 있는지 확인
+        List<LikeComment> findLC = likeCommentRepository.findByCommentId(comment.getId());
+        if (findLC == null || findLC.isEmpty()) { // 좋아요가 없는 게시글 일 때
+            LikeComment likeComment = new LikeComment(member.getId(), comment.getId());
+            likeCommentRepository.save(likeComment);
+        } else { // 좋아요가 있는 게시글 일 때
+            for (LikeComment lc : findLC) {
+                if (lc.getMemberId().equals(member.getId())) { // 이미 좋아요를 누른 게시글 일 때 -> 좋아요 취소
+
+                    likeCommentRepository.delete(lc);
+                    comment.minusLike();
+                    commentRepository.save(comment);
+                    return "cancelLike";
+                }
+            }
+            // 좋아요 누름
+            LikeComment likeComment = new LikeComment(member.getId(), comment.getId());
+            likeCommentRepository.save(likeComment);
+        }
+        comment.plusLike();
+        commentRepository.save(comment);
+        return "submitLike";
+    }
+
+    // 댓글 싫어요
+    @PatchMapping("/api/comment/hate/{commentId}")
+    public String hateComment(@PathVariable Long commentId, Authentication authentication) {
+        Optional<Comment> findComment = commentRepository.findById(commentId);
+        if (findComment.isEmpty()) {
+            throw new IllegalStateException("likeComment : 존재하지 않는 댓글입니다.");
+        }
+        Member member = memberService.getMemberFromToken(authentication);
+        Comment comment = findComment.get();
+
+        // 1. 이 게시글에 싫어요가 있는지 확인
+        List<HateComment> findHC = hateCommentRepository.findByCommentId(comment.getId());
+        if (findHC == null || findHC.isEmpty()) { // 좋아요가 없는 게시글 일 때
+            HateComment hateComment = new HateComment(member.getId(), comment.getId());
+            hateCommentRepository.save(hateComment);
+        } else { // 싫어요가 있는 게시글 일 때
+            for (HateComment hc : findHC) {
+                if (hc.getMemberId().equals(member.getId())) { // 이미 싫어요를 누른 게시글 일 때 -> 싫어요 취소
+
+                    hateCommentRepository.delete(hc);
+                    comment.minusHate();
+                    commentRepository.save(comment);
+                    return "cancelHate";
+                }
+            }
+            // 싫어요 누름
+            HateComment hateComment = new HateComment(member.getId(), comment.getId());
+            hateCommentRepository.save(hateComment);
+        }
+        comment.plusHate();
+        commentRepository.save(comment);
+        return "submitHate";
+    }
 
 }
