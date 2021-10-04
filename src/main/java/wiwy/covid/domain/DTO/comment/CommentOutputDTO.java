@@ -17,6 +17,7 @@ public class CommentOutputDTO {
     private String postName;
     private int likes;
     private int hates;
+    private Long postId;
     private boolean isAuthor = false;
 
     public CommentOutputDTO(Comment comment) {
@@ -29,6 +30,7 @@ public class CommentOutputDTO {
         this.postName = comment.getPost().getPostName();
         this.likes = comment.getLikes();
         this.hates = comment.getHates();
+        this.postId = comment.getPost().getId();
         this.isAuthor = false;
     }
 
