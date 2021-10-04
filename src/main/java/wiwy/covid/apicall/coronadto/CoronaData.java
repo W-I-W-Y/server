@@ -2,10 +2,21 @@ package wiwy.covid.apicall.coronadto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 
 @Getter @Setter
-public class CoronaDto {
+@ToString
+@Entity
+public class CoronaData {
 
+    @Id @GeneratedValue
+    @Column(name = "corona_id")
     private Long id;
 
     private String createDt;
@@ -23,4 +34,5 @@ public class CoronaDto {
     private int seq;
     private String stdDay;
     private String updateDt;
+
 }

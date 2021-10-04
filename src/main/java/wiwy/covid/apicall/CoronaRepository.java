@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import wiwy.covid.apicall.coronadto.CoronaDto;
-import wiwy.covid.apicall.coronadto.CoronaPerWeekDTO;
+import wiwy.covid.apicall.coronadto.CoronaData;
 
 
 import javax.persistence.EntityManager;
@@ -20,34 +19,34 @@ public class CoronaRepository {
     private final EntityManager em;
 
     @Transactional
-    public void save(CoronaDto coronaDto) {
+    public void save(CoronaData coronaDto) {
         em.persist(coronaDto);
         log.info("CoronaDto saved, gubun = {}", coronaDto.getGubun());
     }
 
-    public List<CoronaDto> findRecentCorona() {
-        return em.createQuery("select c from CoronaDto c order by c.seq desc", CoronaDto.class)
+    public List<CoronaData> findRecentCorona() {
+        return em.createQuery("select c from CoronaDto c order by c.seq desc", CoronaData.class)
                 .setFirstResult(0)
                 .setMaxResults(1)
                 .getResultList();
     }
 
-    public List<CoronaDto> findCoronaPerDay() {
-        return em.createQuery("select c from CoronaDto c order by c.seq desc",CoronaDto.class)
+    public List<CoronaData> findCoronaPerDay() {
+        return em.createQuery("select c from CoronaDto c order by c.seq desc", CoronaData.class)
                 .setFirstResult(0)
                 .setMaxResults(18)
                 .getResultList();
     }
 
-    public List<CoronaDto> findHapGae() {
-        return em.createQuery("select c from CoronaDto c order by c.seq desc", CoronaDto.class)
+    public List<CoronaData> findHapGae() {
+        return em.createQuery("select c from CoronaDto c order by c.seq desc", CoronaData.class)
                 .setFirstResult(18)
                 .setMaxResults(1)
                 .getResultList();
     }
 
-    public List<CoronaDto> findConfirmedPerWeek() {
-        return em.createQuery("select c from CoronaDto c where c.gubun = '합계' order by c.seq desc", CoronaDto.class)
+    public List<CoronaData> findConfirmedPerWeek() {
+        return em.createQuery("select c from CoronaDto c where c.gubun = '합계' order by c.seq desc", CoronaData.class)
                 .setFirstResult(0)
                 .setMaxResults(7)
                 .getResultList();

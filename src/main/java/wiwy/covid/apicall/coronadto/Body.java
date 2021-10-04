@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter @Setter
 public class Body {
-    private List<CoronaDto> items = new ArrayList<>();
+    private List<CoronaData> items = new ArrayList<>();
     private int numOfRows;
     private int pageNo;
     private int totalCount;

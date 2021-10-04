@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.abroadcoronadto.AbrResponse;
-import wiwy.covid.apicall.coronadto.CoronaDto;
+import wiwy.covid.apicall.coronadto.CoronaData;
 import wiwy.covid.apicall.coronadto.Response;
 import wiwy.covid.apicall.dismsgdto.DisasterMsg;
 import wiwy.covid.apicall.vaccinedto.Vaccine;
@@ -67,7 +67,7 @@ public class ApiExplorer {
 
         if(response.getBody().getTotalCount() != 0 && response.getHeader().getResultCode() == 0) {
             if(response.getBody().getItems() != null) {
-                List<CoronaDto> items = response.getBody().getItems();
+                List<CoronaData> items = response.getBody().getItems();
                 System.out.println(items.toString());
                 Integer currentSeq = items.get(0).getSeq();
                 log.debug("currentSeq = {}", currentSeq);
@@ -78,8 +78,8 @@ public class ApiExplorer {
         }
     }
 
-    private void validateCoronaData(List<CoronaDto> items, Integer currentSeq) {
-        List<CoronaDto> recentCorona = coronaRepository.findRecentCorona();
+    private void validateCoronaData(List<CoronaData> items, Integer currentSeq) {
+        List<CoronaData> recentCorona = coronaRepository.findRecentCorona();
         int recentSeq = 0;
 
         if(recentCorona != null && !recentCorona.isEmpty()) {

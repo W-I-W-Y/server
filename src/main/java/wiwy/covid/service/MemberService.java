@@ -49,6 +49,10 @@ public class MemberService  {
     private void validateDuplicateMember(Member member) {
         Optional<Member> findMember = memberRepository.findByUsername(member.getUsername());
         if(findMember.isPresent()) {
+            if (findMember.get().getId().equals(member.getId())) {
+                // 회원정보를 수정하는 경우는 이름이 중복이기때문에 패스
+                return;
+            }
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }

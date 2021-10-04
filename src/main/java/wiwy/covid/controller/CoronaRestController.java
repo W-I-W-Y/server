@@ -1,9 +1,9 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import wiwy.covid.apicall.AbrCoronaRepository;
 import wiwy.covid.apicall.CoronaRepository;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
@@ -11,21 +11,25 @@ import wiwy.covid.apicall.coronadto.CoronaData;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @RequiredArgsConstructor
-@Controller
-public class CoronaController {
+@RestController
+public class CoronaRestController {
 
     private final CoronaRepository coronaRepository;
     private final AbrCoronaRepository abrCoronaRepository;
 
-    @GetMapping("/")
+    @GetMapping("/api/covid")
     public String showCovid(Model model) {
 
         // 코로나 확진자 현황
         List<CoronaData> hapGae = coronaRepository.findHapGae();
         CoronaData coronaToday = hapGae.get(0);
+        model.addAttribute("coronaToday", coronaToday);
 
         // 날짜별 코로나 확진자 현황
 //        List<String> coronaDays = new ArrayList<>();
@@ -73,7 +77,7 @@ public class CoronaController {
         }
 
 
-        model.addAttribute("coronaToday", coronaToday);
+
         model.addAttribute("abroads", abroads);
         return "main";
     }
