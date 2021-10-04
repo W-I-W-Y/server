@@ -58,7 +58,7 @@ public class CommentController {
     }
 
     // 댓글 삭제
-    @DeleteMapping("/api/comment/delete/{commentId}")
+    @PostMapping("/api/comment/delete/{commentId}")
     public String deleteComment(@PathVariable Long commentId, Authentication authentication) {
         Member member = memberService.getMemberFromToken(authentication);
         Optional<Comment> findComment = commentRepository.findById(commentId);

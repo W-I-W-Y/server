@@ -46,7 +46,7 @@ public class BoardController {
     }
 
     // 게시판 삭제하기
-    @DeleteMapping("/api/board/delete")
+    @PostMapping("/api/board/delete")
     public String deleteBoard(@RequestBody BoardDTO boardDTO) {
         Optional<Board> findBoard = boardRepository.findByBoardName(boardDTO.getBoardName());
         log.info("findBoard = {}", findBoard.get().getBoardName());
