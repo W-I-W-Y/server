@@ -23,4 +23,23 @@ public class CoronaDto {
     private int seq;
     private String stdDay;
     private String updateDt;
+
+    public CoronaDto(CoronaData coronaData) {
+        this.id = coronaData.getId();
+        this.createDt = coronaData.getCreateDt();
+        this.deathCnt = coronaData.getDeathCnt();
+        this.defCnt = coronaData.getDefCnt();
+        this.gubun = coronaData.getGubun();
+        this.gubunCn = coronaData.getGubunCn();
+        this.gubunEn = coronaData.getGubunEn();
+        this.incDec = coronaData.getIncDec();
+        this.isolClearCnt = coronaData.getIsolClearCnt();
+        this.isolIngCnt = coronaData.getIsolIngCnt();
+        this.localOccCnt = coronaData.getLocalOccCnt();
+        this.overFlowCnt = coronaData.getOverFlowCnt();
+        this.qurRate = coronaData.getQurRate();
+        this.seq = coronaData.getSeq();
+        this.stdDay = coronaData.getStdDay();
+        this.updateDt = coronaData.getUpdateDt();
+    }
 }

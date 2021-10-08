@@ -13,8 +13,8 @@ import java.io.IOException;
 public class RenewVaccine {
 
     private final ApiExplorer apiExplorer;
-
-    @Scheduled(cron = "0 5 9 * * *")
+    @Scheduled(cron = "0 0/30 * * * *") // 30분마다
+//    @Scheduled(cron = "0 35 9 * * *")
     public void renewingVaccine() throws IOException {
         apiExplorer.updateVaccine();
         log.info("Update Item");

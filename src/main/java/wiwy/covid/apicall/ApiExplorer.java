@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.abroadcoronadto.AbrResponse;
@@ -20,6 +21,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -68,31 +70,33 @@ public class ApiExplorer {
         if(response.getBody().getTotalCount() != 0 && response.getHeader().getResultCode() == 0) {
             if(response.getBody().getItems() != null) {
                 List<CoronaData> items = response.getBody().getItems();
-                System.out.println(items.toString());
-                Integer currentSeq = items.get(0).getSeq();
-                log.debug("currentSeq = {}", currentSeq);
-                validateCoronaData(items, currentSeq);
+                validateCoronaData(items);
             }
         } else {
             log.warn("Corona Data API ERROR");
         }
     }
 
-    private void validateCoronaData(List<CoronaData> items, Integer currentSeq) {
-        List<CoronaData> recentCorona = coronaRepository.findRecentCorona();
-        int recentSeq = 0;
-
-        if(recentCorona != null && !recentCorona.isEmpty()) {
-            log.debug("recentCorona = {}", recentCorona);
-            recentSeq = recentCorona.get(0).getSeq();
-        }
-        int validateSeq = currentSeq - recentSeq;
-        log.debug("validateSeq = {}", validateSeq);
-
-        if(validateSeq != 0) {
-            for(int i=0;i < 19 ;i++) {
-                coronaRepository.save(items.get(i));
+    private void validateCoronaData(List<CoronaData> items) {
+        List<CoronaData> all = coronaRepository.findAll();
+        if (all.isEmpty()) {
+            for (CoronaData item : items) {
+                coronaRepository.save(item);
             }
+            return;
+        }
+        CoronaData recentCorona = coronaRepository.findFirstByOrderByIdDesc();
+
+        if(recentCorona == null) {
+            throw new IllegalStateException("validateCoronaData : recentCorona가 존재하지 않습니다.");
+        }
+        LocalDate now = LocalDate.now();
+        if (recentCorona.getCreateDt().contains(now.toString())) { // 오늘 데이터를 가지고 있음
+            // 오늘 데이터를 가지고 있음 -> 더 받으면 중복임
+            return;
+        }
+        for (CoronaData item : items) {
+            coronaRepository.save(item);
         }
     }
 
@@ -167,7 +171,7 @@ public class ApiExplorer {
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        System.setProperty("https.protocols", "TLSv1");
+//        System.setProperty("https.protocols", "TLSv1");
 
         BufferedReader rd;
         if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
@@ -188,12 +192,38 @@ public class ApiExplorer {
         wiwy.covid.apicall.vaccinedto.Response response = xmlMapper.readValue(sb.toString(), wiwy.covid.apicall.vaccinedto.Response.class);
         List<Vaccine> items = response.getBody().getItems();
         if(items != null) {
-            for (Vaccine item : items) {
-                vaccineRepository.save(item);
-            }
+            validateVaccine(items);
         }
 
 
+    }
+
+    private void validateVaccine(List<Vaccine> items) {
+        List<Vaccine> all = vaccineRepository.findAll();
+        Vaccine findVaccine = vaccineRepository.findFirstByTpcd("전체건수(C): (A)+(B)", Sort.by("firstCnt").descending());
+
+        if (all.isEmpty()) {
+            for (Vaccine vaccine : items) {
+                vaccineRepository.save(vaccine);
+            }
+            return;
+        }
+
+        if (findVaccine == null) {
+            throw new IllegalStateException("validateVaccine : findVaccine 가 존재하지 않습니다.");
+        }
+
+        Integer compareCnt = 0;
+        for (Vaccine item : items) {
+            if (item.getTpcd().equals("전체건수(C): (A)+(B)")) {
+                if (findVaccine.getFirstCnt().equals(item.getFirstCnt())) {
+                    return;
+                }
+            }
+        }
+        for (Vaccine item : items) {
+            vaccineRepository.save(item);
+        }
     }
 
     @Transactional
@@ -231,30 +261,35 @@ public class ApiExplorer {
             if(abrResponse.getBody().getItems() != null) {
                 List<AbrCoronaDto> items = abrResponse.getBody().getItems();
                 System.out.println(items.toString());
-                Integer currentSeq = items.get(0).getSeq();
-                log.debug("currentSeq = {}", currentSeq);
-                validateAbrCoronaData(items, currentSeq);
+                validateAbrCoronaData(items);
             }
         } else {
             log.warn("Abroad Corona Data API ERROR");
         }
     }
 
-    private void validateAbrCoronaData(List<AbrCoronaDto> items, Integer currentSeq) {
-        List<AbrCoronaDto> recentAbrCorona = abrCoronaRepository.findRecent();
-        int recentSeq = 0;
+    private void validateAbrCoronaData(List<AbrCoronaDto> items) {
+        List<AbrCoronaDto> all = abrCoronaRepository.findAll();
+        AbrCoronaDto recentAbrCorona = abrCoronaRepository.findFirstByOrderByIdDesc();
 
-        if(recentAbrCorona != null && !recentAbrCorona.isEmpty()) {
-            log.debug("recentAbrCorona = {}", recentAbrCorona);
-            recentSeq = recentAbrCorona.get(0).getSeq();
-        }
-        int validateSeq = currentSeq - recentSeq;
-        log.debug("validateSeq = {}", validateSeq);
-
-        if(validateSeq != 0) {
-            for(int i=0;i < 190 ;i++) {
-                abrCoronaRepository.save(items.get(i));
+        if (all.isEmpty()) {
+            for (AbrCoronaDto item : items) {
+                abrCoronaRepository.save(item);
             }
+            return;
+        }
+
+        if(recentAbrCorona == null) {
+            throw new IllegalStateException("validateAbrCoronaData : recentAbrCorona 가 존재하지 않습니다.");
+        }
+
+        LocalDate now = LocalDate.now();
+        if (recentAbrCorona.getCreateDt().contains(now.toString())) {
+            // 오늘 데이터가 이미 업데이트 됨 -> 더 받으면 중복
+            return;
+        }
+        for (AbrCoronaDto item : items) {
+            abrCoronaRepository.save(item);
         }
     }
 

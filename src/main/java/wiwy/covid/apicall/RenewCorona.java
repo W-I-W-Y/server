@@ -34,9 +34,6 @@ public class RenewCorona {
 
         log.info("renew start");
         apiExplorer.fetching(curDate,curDate);
-//        apiExplorer.fetching("20210501","20210528");
-//        apiExplorer.fetching("20210502","20210502");
-//        apiExplorer.fetching("20210503","20210503");
         log.info("renew end");
     }
 
@@ -55,9 +52,6 @@ public class RenewCorona {
 
         log.info("renew start");
         apiExplorer.fetchingAbrCorona(curDate,curDate);
-//        apiExplorer.fetching("20210501","20210501");
-//        apiExplorer.fetching("20210502","20210502");
-//        apiExplorer.fetching("20210503","20210503");
         log.info("renew end");
     }
 }
