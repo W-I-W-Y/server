@@ -22,6 +22,7 @@ import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -63,7 +64,7 @@ public class ApiExplorer {
         }
         rd.close();
         conn.disconnect();
-        log.debug("sb.toString() = {}",sb.toString());
+//        log.debug("sb.toString() = {}",sb.toString());
 
         Response response= xmlMapper.readValue(sb.toString(), Response.class);
 
@@ -90,9 +91,8 @@ public class ApiExplorer {
         if(recentCorona == null) {
             throw new IllegalStateException("validateCoronaData : recentCorona가 존재하지 않습니다.");
         }
-        LocalDate now = LocalDate.now();
-        if (recentCorona.getCreateDt().contains(now.toString())) { // 오늘 데이터를 가지고 있음
-            // 오늘 데이터를 가지고 있음 -> 더 받으면 중복임
+        if (recentCorona.getStdDay().equals(items.get(0).getStdDay())) { // 오늘 데이터를 가지고 있음
+            log.info("ApiExplorer : validateCoronaData : 당일 코로나데이터가 중복으로 존재하여 DB에 저장하지 않습니다.");
             return;
         }
         for (CoronaData item : items) {
@@ -283,9 +283,9 @@ public class ApiExplorer {
             throw new IllegalStateException("validateAbrCoronaData : recentAbrCorona 가 존재하지 않습니다.");
         }
 
-        LocalDate now = LocalDate.now();
-        if (recentAbrCorona.getCreateDt().contains(now.toString())) {
+        if (recentAbrCorona.getStdDay().equals(items.get(0).getStdDay())) {
             // 오늘 데이터가 이미 업데이트 됨 -> 더 받으면 중복
+            log.info("ApiExplorer : validateAbrCoronaData : 당일 해외코로나데이터가 중복으로 존재하여 DB에 저장하지 않습니다.");
             return;
         }
         for (AbrCoronaDto item : items) {
