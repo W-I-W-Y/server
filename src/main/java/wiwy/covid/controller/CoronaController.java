@@ -2,6 +2,7 @@ package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wiwy.covid.apicall.AbrCoronaComparator;
 import wiwy.covid.apicall.AbrCoronaRepository;
 import wiwy.covid.apicall.CoronaRepository;
 import wiwy.covid.apicall.VaccineRepository;
@@ -32,6 +34,9 @@ public class CoronaController {
     private final CoronaRepository coronaRepository;
     private final AbrCoronaRepository abrCoronaRepository;
     private final VaccineRepository vaccineRepository;
+
+    @Autowired
+    private AbrCoronaComparator abrCoronaComparator;
 
     @GetMapping("/api/corona")
     public CoronaOutputDTO show() {
@@ -96,10 +101,12 @@ public class CoronaController {
         AbrCoronaDto recent = abrCoronaRepository.findFirstByOrderByIdDesc();
         if (recent.getStdDay().contains(compareToday)) { // 오늘 데이터가 있으면
             List<AbrCoronaDto> abrCoronaDtos = abrCoronaRepository.findByStdDayContaining(compareToday);
+            abrCoronaDtos.sort(new AbrCoronaComparator().reversed());
             List<AbrCoronaOutputDTO> collect = abrCoronaDtos.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
             coronaOutputDTO.setAbrCoronaDtos(collect);
         } else if (recent.getStdDay().contains(compareYest)) {
             List<AbrCoronaDto> abrCoronaDtos = abrCoronaRepository.findByStdDayContaining(compareYest);
+            abrCoronaDtos.sort(new AbrCoronaComparator().reversed());
             List<AbrCoronaOutputDTO> collect = abrCoronaDtos.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
             coronaOutputDTO.setAbrCoronaDtos(collect);
         }

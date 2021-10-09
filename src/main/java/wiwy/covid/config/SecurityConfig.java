@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.filter.CorsFilter;
+import wiwy.covid.apicall.AbrCoronaComparator;
 import wiwy.covid.config.auth.PrincipalDetailsService;
 import wiwy.covid.config.jwt.JwtAuthenticationFilter;
 import wiwy.covid.config.jwt.JwtAuthorizationFilter;
@@ -26,6 +27,11 @@ import wiwy.covid.repository.MemberRepository;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PrincipalDetailsService principalDetailsService;
+
+    @Bean
+    public AbrCoronaComparator abrCoronaComparator() {
+        return new AbrCoronaComparator();
+    }
 
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
