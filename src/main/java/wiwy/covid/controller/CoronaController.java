@@ -16,6 +16,7 @@ import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaOutputDTO;
 import wiwy.covid.apicall.coronadto.*;
 import wiwy.covid.apicall.vaccinedto.Vaccine;
+import wiwy.covid.apicall.vaccinedto.VaccineChartDTO;
 import wiwy.covid.apicall.vaccinedto.VaccineDTO;
 
 import java.time.LocalDate;
@@ -109,8 +110,11 @@ public class CoronaController {
 //        Pageable pageable = PageRequest.of(0,2, Sort.by("firstCnt").descending());
         Vaccine total = vaccineRepository.findFirstByTpcd("전체건수(C): (A)+(B)", Sort.by("firstCnt").descending());
         Vaccine inc = vaccineRepository.findFirstByTpcd("당일실적(A)", Sort.by("firstCnt").descending());
+        List<Vaccine> vaccineList = vaccineRepository.findTop7ByTpcd("당일실적(A)", Sort.by("firstCnt").descending());
+        List<VaccineChartDTO> collect = vaccineList.stream().map(vaccine -> new VaccineChartDTO(vaccine)).collect(Collectors.toList());
         VaccineDTO vaccineDTO = new VaccineDTO(total, inc);
         coronaOutputDTO.setVaccineDTO(vaccineDTO);
+        coronaOutputDTO.setVaccineChartDTOS(collect);
 
 
         return coronaOutputDTO;
