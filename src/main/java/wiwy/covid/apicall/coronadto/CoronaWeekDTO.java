@@ -6,11 +6,11 @@ import lombok.Setter;
 @Getter @Setter
 public class CoronaWeekDTO {
 
-    private int defCnt;
+    private int incDec;
     private String stdDay;
 
     public CoronaWeekDTO(CoronaData coronaData) {
-        this.defCnt = coronaData.getDefCnt();
+        this.incDec = coronaData.getIncDec();
         this.stdDay = coronaData.getStdDay();
     }
 }
