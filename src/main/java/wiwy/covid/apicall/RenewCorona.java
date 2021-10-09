@@ -20,7 +20,7 @@ public class RenewCorona {
 
 //    @Scheduled(fixedRate = 1000*60*5)
 //    @Scheduled(cron = "0/30 * * * * *")   // 30초마다
-    @Scheduled(cron = "0 0/1 * * * *") // 30분마다
+    @Scheduled(cron = "0 0/30 * * * *") // 30분마다
     public void renewingData() throws IOException {
         LocalDate currentDate = LocalDate.now();
         LocalDateTime curTime = LocalDateTime.now();
