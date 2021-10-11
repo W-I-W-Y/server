@@ -94,7 +94,10 @@ public class CoronaController {
          */
 
         AbrCoronaDto recent = abrCoronaRepository.findFirstByOrderByIdDesc();
-        List<AbrCoronaDto> abrCoronaDtoList = abrCoronaRepository.findByStdDayContaining(recent.getStdDay());
+        String stdDay = recent.getStdDay();
+        String cp = stdDay.substring(stdDay.length() - 4, stdDay.length());
+        log.info("Get abrCoronaDto in CoronaController = {}",stdDay);
+        List<AbrCoronaDto> abrCoronaDtoList = abrCoronaRepository.findByStdDayContaining(cp);
         abrCoronaDtoList.sort(new AbrCoronaComparator().reversed());
         List<AbrCoronaOutputDTO> abrCoronaOutputDTOList = abrCoronaDtoList.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
         coronaOutputDTO.setAbrCoronaDtos(abrCoronaOutputDTOList);
