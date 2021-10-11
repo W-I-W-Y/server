@@ -2,6 +2,7 @@ package wiwy.covid.apicall;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public interface CoronaRepository extends JpaRepository<CoronaData, Long> {
 
     CoronaData findByStdDayAndGubun(String stdDay, String gubun);
 
-    List<CoronaData> findTop7ByGubun(String gubun);
+    List<CoronaData> findTop7ByGubun(String gubun, Sort sort);
 
     CoronaData findFirstByOrderByIdDesc();
 //    findFirstByOrderByStdDayAndGubun(String stdDay, String gubun);

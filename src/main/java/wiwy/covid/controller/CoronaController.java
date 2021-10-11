@@ -56,7 +56,7 @@ public class CoronaController {
         /**
          *  7일간 확진환자 수
          */
-        List<CoronaData> coronaWeeks = coronaRepository.findTop7ByGubun("합계");
+        List<CoronaData> coronaWeeks = coronaRepository.findTop7ByGubun("합계", Sort.by("createDt").descending());
         List<CoronaWeekDTO> coronaWeekDTOS = coronaWeeks.stream().map(coronaWeek -> new CoronaWeekDTO(coronaWeek)).collect(Collectors.toList());
         coronaOutputDTO.setCoronaWeekDTOS(coronaWeekDTOS);
         if (todayCorona == null) { // 그 날짜의 데이터가 없으면 -> 새벽이어서 그 날 데이터가 없음 -> 어제 데이터를 보여줘야함
