@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.filter.CorsFilter;
 import wiwy.covid.apicall.AbrCoronaComparator;
+import wiwy.covid.apicall.CoronaDataComparator;
 import wiwy.covid.config.auth.PrincipalDetailsService;
 import wiwy.covid.config.jwt.JwtAuthenticationFilter;
 import wiwy.covid.config.jwt.JwtAuthorizationFilter;
@@ -31,6 +32,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AbrCoronaComparator abrCoronaComparator() {
         return new AbrCoronaComparator();
+    }
+
+    @Bean
+    public CoronaDataComparator coronaDataComparator() {
+        return new CoronaDataComparator();
     }
 
     @Override

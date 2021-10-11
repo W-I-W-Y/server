@@ -10,10 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wiwy.covid.apicall.AbrCoronaComparator;
-import wiwy.covid.apicall.AbrCoronaRepository;
-import wiwy.covid.apicall.CoronaRepository;
-import wiwy.covid.apicall.VaccineRepository;
+import wiwy.covid.apicall.*;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaOutputDTO;
 import wiwy.covid.apicall.coronadto.*;
@@ -35,9 +32,6 @@ public class CoronaController {
     private final AbrCoronaRepository abrCoronaRepository;
     private final VaccineRepository vaccineRepository;
 
-    @Autowired
-    private AbrCoronaComparator abrCoronaComparator;
-
     @GetMapping("/api/corona")
     public CoronaOutputDTO show() {
 
@@ -57,6 +51,7 @@ public class CoronaController {
          *  7일간 확진환자 수
          */
         List<CoronaData> coronaWeeks = coronaRepository.findTop7ByGubun("합계", Sort.by("createDt").descending());
+        coronaWeeks.sort(new CoronaDataComparator());
         List<CoronaWeekDTO> coronaWeekDTOS = coronaWeeks.stream().map(coronaWeek -> new CoronaWeekDTO(coronaWeek)).collect(Collectors.toList());
         coronaOutputDTO.setCoronaWeekDTOS(coronaWeekDTOS);
         if (todayCorona == null) { // 그 날짜의 데이터가 없으면 -> 새벽이어서 그 날 데이터가 없음 -> 어제 데이터를 보여줘야함
