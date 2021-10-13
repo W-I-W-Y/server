@@ -283,7 +283,10 @@ public class ApiExplorer {
             throw new IllegalStateException("validateAbrCoronaData : recentAbrCorona 가 존재하지 않습니다.");
         }
 
-        if (recentAbrCorona.getStdDay().equals(items.get(0).getStdDay())) {
+        String stdDay = recentAbrCorona.getStdDay();
+        String cp = stdDay.substring(0, stdDay.length() - 4);
+
+        if (items.get(0).getStdDay().contains(cp)) {
             // 오늘 데이터가 이미 업데이트 됨 -> 더 받으면 중복
             log.info("ApiExplorer : validateAbrCoronaData : 당일 해외코로나데이터가 중복으로 존재하여 DB에 저장하지 않습니다.");
             return;
