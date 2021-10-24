@@ -93,24 +93,18 @@ public class CoronaController {
          * 국외 발생동향
          */
 
-        AbrCoronaDto recent = abrCoronaRepository.findFirstByOrderByIdDesc();
-        String stdDay = recent.getStdDay();
-        String cp = stdDay.substring(0, stdDay.length()-4);
-        List<AbrCoronaDto> abrCoronaDtoList = abrCoronaRepository.findByStdDayContaining(cp);
-        abrCoronaDtoList.sort(new AbrCoronaComparator().reversed());
-        List<AbrCoronaOutputDTO> abrCoronaOutputDTOList = abrCoronaDtoList.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
-        coronaOutputDTO.setAbrCoronaDtos(abrCoronaOutputDTOList);
-//        if (recent.getStdDay().contains(compareToday)) { // 오늘 데이터가 있으면
-//            List<AbrCoronaDto> abrCoronaDtos = abrCoronaRepository.findByStdDayContaining(compareToday);
-//            abrCoronaDtos.sort(new AbrCoronaComparator().reversed());
-//            List<AbrCoronaOutputDTO> collect = abrCoronaDtos.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
-//            coronaOutputDTO.setAbrCoronaDtos(collect);
-//        } else if (recent.getStdDay().contains(compareYest)) {
-//            List<AbrCoronaDto> abrCoronaDtos = abrCoronaRepository.findByStdDayContaining(compareYest);
-//            abrCoronaDtos.sort(new AbrCoronaComparator().reversed());
-//            List<AbrCoronaOutputDTO> collect = abrCoronaDtos.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
-//            coronaOutputDTO.setAbrCoronaDtos(collect);
-//        }
+        Optional<AbrCoronaDto> recent = abrCoronaRepository.findFirstByOrderByIdDesc();
+        if (recent.isEmpty()) {
+            throw new IllegalStateException("국외 데이터가 아예 없음");
+        } else {
+            String stdDay = recent.get().getStdDay();
+            String cp = stdDay.substring(0, stdDay.length()-4);
+            List<AbrCoronaDto> abrCoronaDtoList = abrCoronaRepository.findByStdDayContaining(cp);
+            abrCoronaDtoList.sort(new AbrCoronaComparator().reversed());
+            List<AbrCoronaOutputDTO> abrCoronaOutputDTOList = abrCoronaDtoList.stream().map(abrCoronaDto -> new AbrCoronaOutputDTO(abrCoronaDto)).collect(Collectors.toList());
+            coronaOutputDTO.setAbrCoronaDtos(abrCoronaOutputDTOList);
+        }
+
 
         /**
          * 백신 접종 현황

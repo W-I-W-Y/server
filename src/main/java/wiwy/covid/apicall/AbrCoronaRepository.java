@@ -4,10 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AbrCoronaRepository extends JpaRepository<AbrCoronaDto, Long> {
 
-    AbrCoronaDto findFirstByOrderByIdDesc();
+    Optional<AbrCoronaDto> findFirstByOrderByIdDesc();
 
     List<AbrCoronaDto> findByStdDayContaining(String stdDay);
 }
