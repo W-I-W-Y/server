@@ -89,7 +89,7 @@ public class VoteController {
         }
         vote.plusAgree();
         voteRepository.save(vote);
-        return "submitVote";
+        return "submitAgree";
     }
 
     // 게시글 싫어요
