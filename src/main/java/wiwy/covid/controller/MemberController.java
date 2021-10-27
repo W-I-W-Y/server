@@ -66,6 +66,11 @@ public class MemberController {
             findMember.setEmail(memberInputDTO.getEmail());
         }
 
+        // 지역 수정
+        if (!memberInputDTO.getRegion().equals(findMember.getRegion())) {
+            findMember.setRegion(memberInputDTO.getRegion());
+        }
+
         memberService.join(findMember);
         return "modifyMember";
     }
