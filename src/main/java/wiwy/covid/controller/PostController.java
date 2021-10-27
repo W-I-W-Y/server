@@ -87,6 +87,15 @@ public class PostController {
         }
     }
 
+    // 지역 게시판에 포스트 작성
+    @PostMapping("/api/post/add/region")
+    public String addRegionPost(@PathVariable Long boardId, @RequestBody PostInputDTO postDTO, Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
+        postRepository.save(new Post(postDTO, member, findBoard.get()));
+        return "addRegionPost";
+    }
+
     // 해당 게시판에 포스트 작성
     @PostMapping("/api/post/add/{boardId}")
     public String addPost(@PathVariable Long boardId, @RequestBody PostInputDTO postDTO, Authentication authentication) {

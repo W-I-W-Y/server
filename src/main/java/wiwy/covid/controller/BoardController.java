@@ -6,13 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.Board;
 import wiwy.covid.domain.DTO.board.BoardDTO;
+import wiwy.covid.domain.Member;
 import wiwy.covid.domain.Post;
 import wiwy.covid.domain.DTO.post.PostOutputDTO;
 import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
+import wiwy.covid.service.MemberService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class BoardController {
 
     private final BoardRepository boardRepository;
     private final PostRepository postRepository;
+    private final MemberService memberService;
 
     // 게시판 추가하기
     @PostMapping("/api/board/add")
@@ -71,6 +75,29 @@ public class BoardController {
         Optional<Board> findBoard = boardRepository.findById(boardId);
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewPostOnBoard : 존재하지 않는 게시판입니다.");
+        }
+        if (pageNum == null) {
+            Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+            Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+            List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
+            return postDTOs;
+
+        } else {
+            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+            List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
+            return postDTOs;
+        }
+    }
+
+
+    // 지역별 게시판 글 보기
+    @GetMapping("/api/board/region/view/{pageNum}")
+    public List<PostOutputDTO> viewRegionBoard(@PathVariable Integer pageNum, Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
+        if (findBoard.isEmpty()) {
+            throw new IllegalStateException("viewRegionBoard : 존재하지 않는 지역 게시판입니다.");
         }
         if (pageNum == null) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());

@@ -32,7 +32,7 @@ public class CommunityController {
 
     @GetMapping("/api/community")
     public List<CommunityDTO> community() {
-        List<Board> allBoards = boardRepository.findAll();
+        List<Board> allBoards = boardRepository.findByBoardNameContaining("게시판");
         Optional<Vote> findVote = voteRepository.findFirstByOrderByIdDesc();
         List<CommunityDTO> communityDTOList = new ArrayList<>();
         for (Board board : allBoards) {
