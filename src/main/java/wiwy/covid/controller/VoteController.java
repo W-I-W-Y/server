@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
 import wiwy.covid.domain.DTO.vote.VoteInputDTO;
+import wiwy.covid.domain.DTO.vote.VoteOutputDTO;
 import wiwy.covid.repository.AgreeVoteRepository;
 import wiwy.covid.repository.DisagreeVoteRepository;
 import wiwy.covid.repository.VoteRepository;
@@ -122,6 +123,16 @@ public class VoteController {
         vote.plusDisagree();
         voteRepository.save(vote);
         return "submitDisagree";
+    }
+
+    // 투표 보기
+    @GetMapping("/api/vote/view")
+    public VoteOutputDTO viewVote() {
+        Optional<Vote> findVote = voteRepository.findFirstByOrderByIdDesc();
+        if (findVote.isEmpty()) {
+            throw new IllegalStateException("viewVote : 투표가 존재하지 않습니다.");
+        }
+        return new VoteOutputDTO(findVote.get());
     }
 
 }
