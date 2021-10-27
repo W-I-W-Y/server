@@ -39,6 +39,45 @@ public class MemberService  {
         String rawPassword = member.getPassword();
         String encPassword = bCryptPasswordEncoder.encode(rawPassword);
         member.setPassword(encPassword);
+        // 제주, 경남, 경북, 전남, 전북, 충남, 충북, 강원, 경기, 세종, 울산, 대전, 광주, 인천, 대구, 부산, 서울
+        if (member.getRegion().equals("서울")) {
+            member.addRole("ROLE_SEOUL");
+        } else if (member.getRegion().equals("부산")) {
+            member.addRole("ROLE_BUSAN");
+        } else if (member.getRegion().equals("대구")) {
+            member.addRole("ROLE_DAEGU");
+        } else if (member.getRegion().equals("인천")) {
+            member.addRole("ROLE_INCHEON");
+        } else if (member.getRegion().equals("광주")) {
+            member.addRole("ROLE_GWANGJU");
+        } else if (member.getRegion().equals("대전")) {
+            member.addRole("ROLE_DAEJEON");
+        } else if (member.getRegion().equals("울산")) {
+            member.addRole("ROLE_ULSAN");
+        } else if (member.getRegion().equals("세종")) {
+            member.addRole("ROLE_SEJONG");
+        } else if (member.getRegion().equals("경기")) {
+            member.addRole("ROLE_GYEONGGI");
+        } else if (member.getRegion().equals("강원")) {
+            member.addRole("ROLE_GANGWON");
+        } else if (member.getRegion().equals("충북")) {
+            member.addRole("ROLE_CHUNGBUK");
+        } else if (member.getRegion().equals("충남")) {
+            member.addRole("ROLE_CHUNGNAM");
+        } else if (member.getRegion().equals("전북")) {
+            member.addRole("ROLE_JEONBUK");
+        } else if (member.getRegion().equals("전남")) {
+            member.addRole("ROLE_JEONNAM");
+        } else if (member.getRegion().equals("경북")) {
+            member.addRole("ROLE_GYEONGBUK");
+        } else if (member.getRegion().equals("경남")) {
+            member.addRole("ROLE_GYEONGNAM");
+        } else if (member.getRegion().equals("제주")) {
+            member.addRole("ROLE_JEJU");
+        } else {
+            throw new IllegalStateException("MemberService.join : 올바르지 않은 지역입니다.");
+        }
+
         memberRepository.save(member);
 
         return member.getId();

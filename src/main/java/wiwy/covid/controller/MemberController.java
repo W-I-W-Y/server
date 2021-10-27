@@ -23,7 +23,10 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/api/join")
-    public String join(@RequestBody Member member) {
+    public String join(@RequestBody MemberInputDTO memberInputDTO) {
+        Member member = new Member(memberInputDTO);
+        log.info("MemberController = {}", member.getUsername());
+        log.info("MemberController = {}", member.getPassword());
         memberService.join(member);
         return "회원가입 완료";
     }
@@ -38,7 +41,7 @@ public class MemberController {
 
     // 회원 정보 수정
     @PatchMapping("/api/member/modify")
-    public String modifyMember(Authentication authentication, MemberInputDTO memberInputDTO) {
+    public String modifyMember(Authentication authentication, @RequestBody MemberInputDTO memberInputDTO) {
 
         Member findMember = memberService.getMemberFromToken(authentication);
 

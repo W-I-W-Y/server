@@ -2,10 +2,7 @@ package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
 import wiwy.covid.domain.DTO.vote.VoteInputDTO;
 import wiwy.covid.repository.AgreeVoteRepository;
@@ -27,7 +24,7 @@ public class VoteController {
 
     // 투표 추가
     @PostMapping("/api/vote/add")
-    public String addVote(VoteInputDTO voteInputDTO) {
+    public String addVote(@RequestBody VoteInputDTO voteInputDTO) {
         Vote vote = new Vote(voteInputDTO);
         voteRepository.save(vote);
         return "addVote";
@@ -35,7 +32,7 @@ public class VoteController {
 
     // 투표 수정
     @PostMapping("/api/vote/modify/{voteId}")
-    public String modifyVote(@PathVariable Long voteId, VoteInputDTO voteInputDTO) {
+    public String modifyVote(@PathVariable Long voteId, @RequestBody VoteInputDTO voteInputDTO) {
         Optional<Vote> findVote = voteRepository.findById(voteId);
         if (findVote.isEmpty()) {
             throw new IllegalStateException("modifyVote : 존재하지 않는 투표입니다.");
@@ -92,7 +89,7 @@ public class VoteController {
         return "submitAgree";
     }
 
-    // 게시글 싫어요
+    // 투표 비동의
     @PatchMapping("/api/vote/disagree/{voteId}")
     public String disagreeVote(@PathVariable Long voteId, Authentication authentication) {
         Optional<Vote> findVote = voteRepository.findById(voteId);
