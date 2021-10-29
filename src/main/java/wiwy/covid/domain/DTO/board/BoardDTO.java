@@ -15,6 +15,9 @@ public class BoardDTO {
     private String boardName;
     private String description;
 
+    public BoardDTO() {
+    }
+
     public BoardDTO(Board board) {
         this.boardName = board.getBoardName();
         this.description = board.getDescription();
