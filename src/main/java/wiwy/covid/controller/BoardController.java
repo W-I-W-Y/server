@@ -45,8 +45,9 @@ public class BoardController {
 
     // 게시판 목록 보기
     @GetMapping("/api/board/view")
-    public List<Board> viewBoard() {
-        return boardRepository.findAll();
+    public List<BoardDTO> viewBoard() {
+        List<Board> boards = boardRepository.findByBoardNameContaining("게시판");
+        return boards.stream().map(BoardDTO::new).collect(Collectors.toList());
     }
 
     // 게시판 삭제하기
