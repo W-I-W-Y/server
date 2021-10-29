@@ -12,6 +12,7 @@ import java.util.List;
 @Getter @Setter
 public class BoardDTO {
 
+    private Long id;
     private String boardName;
     private String description;
 
@@ -19,6 +20,7 @@ public class BoardDTO {
     }
 
     public BoardDTO(Board board) {
+        this.id = board.getId();
         this.boardName = board.getBoardName();
         this.description = board.getDescription();
     }
