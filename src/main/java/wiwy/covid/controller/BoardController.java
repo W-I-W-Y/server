@@ -95,13 +95,8 @@ public class BoardController {
     // 지역별 게시판 글 보기
     @GetMapping("/api/board/region/view/{pageNum}")
     public List<PostOutputDTO> viewRegionBoard(@PathVariable Integer pageNum, Authentication authentication) {
-        log.info("Authentication = {}", authentication);
-        log.info("Authentication = {}", authentication.getCredentials());
-        log.info("Authentication = {}", authentication.getPrincipal());
-
         Member member = memberService.getMemberFromToken(authentication);
-        log.info("가나다라마바사 = {}", member.getUsername());
-        Optional<Board> findBoard = boardRepository.findByBoardName("서울");
+        Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewRegionBoard : 존재하지 않는 지역 게시판입니다.");
         }
