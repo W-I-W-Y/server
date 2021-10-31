@@ -6,6 +6,7 @@ import wiwy.covid.domain.Vote;
 @Getter
 public class VoteOutputDTO {
 
+    private Long voteId;
     private String content;
     private Integer agree;
     private Integer disagree;
@@ -15,6 +16,7 @@ public class VoteOutputDTO {
     }
 
     public VoteOutputDTO(Vote vote) {
+        this.voteId = vote.getId();
         this.content = vote.getContent();
         this.agree = vote.getAgree();
         this.disagree = vote.getDisagree();
