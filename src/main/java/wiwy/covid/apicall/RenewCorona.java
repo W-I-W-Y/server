@@ -18,15 +18,13 @@ public class RenewCorona {
 
     private final ApiExplorer apiExplorer;
 
-//    @Scheduled(fixedRate = 1000*60*5)
-//    @Scheduled(cron = "0/30 * * * * *")   // 30초마다
     @Scheduled(cron = "0 0/30 * * * *") // 30분마다
     public void renewingData() throws IOException {
         LocalDate currentDate = LocalDate.now();
         LocalDateTime curTime = LocalDateTime.now();
         String curDate;
         if(curTime.getHour() < 9) {
-            curDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), currentDate.getDayOfMonth()-1).format(DateTimeFormatter.BASIC_ISO_DATE);
+            curDate = currentDate.minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
         } else {
             curDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), currentDate.getDayOfMonth()).format(DateTimeFormatter.BASIC_ISO_DATE);
         }
@@ -37,14 +35,13 @@ public class RenewCorona {
         log.info("renew end");
     }
 
-//    @Scheduled(cron = "0/30 * * * * *")   // 30초마다
     @Scheduled(cron = "0 0/30 * * * *") // 30분마다
     public void renewingAbrCoronaData() throws IOException {
         LocalDate currentDate = LocalDate.now();
         LocalDateTime curTime = LocalDateTime.now();
         String curDate;
         if(curTime.getHour() < 9) {
-            curDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), currentDate.getDayOfMonth()-1).format(DateTimeFormatter.BASIC_ISO_DATE);
+            curDate = currentDate.minusDays(1).format(DateTimeFormatter.BASIC_ISO_DATE);
         } else {
             curDate = LocalDate.of(currentDate.getYear(), currentDate.getMonth(), currentDate.getDayOfMonth()).format(DateTimeFormatter.BASIC_ISO_DATE);
         }
