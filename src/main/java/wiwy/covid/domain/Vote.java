@@ -21,8 +21,8 @@ public class Vote {
 
     private String content;
 
-    private Integer agree;
-    private Integer disagree;
+    private int agree;
+    private int disagree;
 
     @CreationTimestamp
     private Timestamp createTime;

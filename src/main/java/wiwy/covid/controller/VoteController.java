@@ -1,6 +1,7 @@
 package wiwy.covid.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
@@ -14,6 +15,7 @@ import wiwy.covid.service.MemberService;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class VoteController {
@@ -64,8 +66,9 @@ public class VoteController {
             throw new IllegalStateException("agreeVote : 존재하지 않는 투표입니다.");
         }
         Member member = memberService.getMemberFromToken(authentication);
+        log.info("param voteId = {}", voteId);
         Vote vote = findVote.get();
-        vote.plusAgree();
+        log.info("Vote name = {}", vote.getContent());
 
         // 1. 이 투표에 동의가 있는지 확인
         List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
@@ -73,6 +76,15 @@ public class VoteController {
             AgreeVote agreeVote = new AgreeVote(member.getId(), vote.getId());
             agreeVoteRepository.save(agreeVote);
         } else { // 동의가 있는 투표일 때
+            // 비동의를 눌렀는지 확인
+            List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
+            for (DisagreeVote disagreeVote : findDV) {
+                if (disagreeVote.getMemberId().equals(member.getId())) {
+                    // 해당 유저가 투표에 비동의를 한 적이 있는 경우
+                    disagreeVoteRepository.delete(disagreeVote);
+                    vote.minusDisagree();
+                }
+            }
             for (AgreeVote av : findAV) {
                 if (av.getMemberId().equals(member.getId())) {
                     agreeVoteRepository.delete(av);
@@ -106,6 +118,14 @@ public class VoteController {
             DisagreeVote disagreeVote = new DisagreeVote(member.getId(), vote.getId());
             disagreeVoteRepository.save(disagreeVote);
         } else { // 비동의가 있는 투표 일 때
+            List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
+            for (AgreeVote agreeVote : findAV) {
+                if (agreeVote.getMemberId().equals(member.getId())) {
+                    // 해당 유저가 이미 동의를 한 투표인 경우
+                    agreeVoteRepository.delete(agreeVote);
+                    vote.minusAgree();
+                }
+            }
             for (DisagreeVote dv : findDV) {
                 if (dv.getMemberId().equals(member.getId())) { // 이미 비동의를 누른 투표일 때
                     disagreeVoteRepository.delete(dv);
@@ -127,12 +147,33 @@ public class VoteController {
 
     // 투표 보기
     @GetMapping("/api/vote/view")
-    public VoteOutputDTO viewVote() {
+    public VoteOutputDTO viewVote(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
         Optional<Vote> findVote = voteRepository.findFirstByOrderByIdDesc();
         if (findVote.isEmpty()) {
             throw new IllegalStateException("viewVote : 투표가 존재하지 않습니다.");
         }
-        return new VoteOutputDTO(findVote.get());
+
+        Vote vote = findVote.get();
+        VoteOutputDTO voteOutputDTO = new VoteOutputDTO(vote);
+        List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
+        for (AgreeVote av : findAV) {
+            if (av.getMemberId().equals(member.getId())) {
+                // 이미 동의한 투표
+                voteOutputDTO.setAgree(true);
+            } else {
+                voteOutputDTO.setAgree(false);
+            }
+        }
+        List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
+        for (DisagreeVote disagreeVote : findDV) {
+            if (disagreeVote.getMemberId().equals(member.getId())) {
+                voteOutputDTO.setDisagree(true);
+            } else {
+                voteOutputDTO.setDisagree(false);
+            }
+        }
+        return voteOutputDTO;
     }
 
 }

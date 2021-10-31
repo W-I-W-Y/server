@@ -1,16 +1,19 @@
 package wiwy.covid.domain.DTO.vote;
 
 import lombok.Getter;
+import lombok.Setter;
 import wiwy.covid.domain.Vote;
 
-@Getter
+@Getter @Setter
 public class VoteOutputDTO {
 
     private Long voteId;
     private String content;
-    private Integer agree;
-    private Integer disagree;
+    private int agreeCnt;
+    private int disagreeCnt;
     private String createDate;
+    private boolean isAgree;
+    private boolean isDisagree;
 
     protected VoteOutputDTO() {
     }
@@ -18,8 +21,8 @@ public class VoteOutputDTO {
     public VoteOutputDTO(Vote vote) {
         this.voteId = vote.getId();
         this.content = vote.getContent();
-        this.agree = vote.getAgree();
-        this.disagree = vote.getDisagree();
+        this.agreeCnt = vote.getAgree();
+        this.disagreeCnt = vote.getDisagree();
         this.createDate = vote.makeDate();
     }
 }
