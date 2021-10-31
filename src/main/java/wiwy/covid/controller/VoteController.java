@@ -66,9 +66,16 @@ public class VoteController {
             throw new IllegalStateException("agreeVote : 존재하지 않는 투표입니다.");
         }
         Member member = memberService.getMemberFromToken(authentication);
-        log.info("param voteId = {}", voteId);
         Vote vote = findVote.get();
-        log.info("Vote name = {}", vote.getContent());
+        // 비동의를 눌렀는지 확인
+        List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
+        for (DisagreeVote disagreeVote : findDV) {
+            if (disagreeVote.getMemberId().equals(member.getId())) {
+                // 해당 유저가 투표에 비동의를 한 적이 있는 경우
+                disagreeVoteRepository.delete(disagreeVote);
+                vote.minusDisagree();
+            }
+        }
 
         // 1. 이 투표에 동의가 있는지 확인
         List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
@@ -76,15 +83,6 @@ public class VoteController {
             AgreeVote agreeVote = new AgreeVote(member.getId(), vote.getId());
             agreeVoteRepository.save(agreeVote);
         } else { // 동의가 있는 투표일 때
-            // 비동의를 눌렀는지 확인
-            List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
-            for (DisagreeVote disagreeVote : findDV) {
-                if (disagreeVote.getMemberId().equals(member.getId())) {
-                    // 해당 유저가 투표에 비동의를 한 적이 있는 경우
-                    disagreeVoteRepository.delete(disagreeVote);
-                    vote.minusDisagree();
-                }
-            }
             for (AgreeVote av : findAV) {
                 if (av.getMemberId().equals(member.getId())) {
                     agreeVoteRepository.delete(av);
@@ -112,20 +110,21 @@ public class VoteController {
         Member member = memberService.getMemberFromToken(authentication);
         Vote vote = findVote.get();
 
+        // 이미 동의를 누른 투표일 경우
+        List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
+        for (AgreeVote agreeVote : findAV) {
+            if (agreeVote.getMemberId().equals(member.getId())) {
+                // 해당 유저가 이미 동의를 한 투표인 경우
+                agreeVoteRepository.delete(agreeVote);
+                vote.minusAgree();
+            }
+        }
         // 1. 이 투표에 비동의가 있는지 확인
         List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
         if (findDV == null || findDV.isEmpty()) { // 비동의가 없는 투표 일 때
             DisagreeVote disagreeVote = new DisagreeVote(member.getId(), vote.getId());
             disagreeVoteRepository.save(disagreeVote);
         } else { // 비동의가 있는 투표 일 때
-            List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
-            for (AgreeVote agreeVote : findAV) {
-                if (agreeVote.getMemberId().equals(member.getId())) {
-                    // 해당 유저가 이미 동의를 한 투표인 경우
-                    agreeVoteRepository.delete(agreeVote);
-                    vote.minusAgree();
-                }
-            }
             for (DisagreeVote dv : findDV) {
                 if (dv.getMemberId().equals(member.getId())) { // 이미 비동의를 누른 투표일 때
                     disagreeVoteRepository.delete(dv);
