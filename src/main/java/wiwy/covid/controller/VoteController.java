@@ -156,24 +156,25 @@ public class VoteController {
 
         Vote vote = findVote.get();
         VoteOutputDTO voteOutputDTO = new VoteOutputDTO(vote);
-        List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
-        for (AgreeVote av : findAV) {
-            if (av.getMemberId().equals(member.getId())) {
-                // 이미 동의한 투표
-                voteOutputDTO.setAgree(true);
-            } else {
-                voteOutputDTO.setAgree(false);
-            }
-        }
-        List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
-        for (DisagreeVote disagreeVote : findDV) {
-            if (disagreeVote.getMemberId().equals(member.getId())) {
-                voteOutputDTO.setDisagree(true);
-            } else {
-                voteOutputDTO.setDisagree(false);
-            }
-        }
         return voteOutputDTO;
+//        List<AgreeVote> findAV = agreeVoteRepository.findByVoteId(vote.getId());
+//        for (AgreeVote av : findAV) {
+//            if (av.getMemberId().equals(member.getId())) {
+//                // 이미 동의한 투표
+//                voteOutputDTO.setAgree(true);
+//            } else {
+//                voteOutputDTO.setAgree(false);
+//            }
+//        }
+//        List<DisagreeVote> findDV = disagreeVoteRepository.findByVoteId(vote.getId());
+//        for (DisagreeVote disagreeVote : findDV) {
+//            if (disagreeVote.getMemberId().equals(member.getId())) {
+//                voteOutputDTO.setDisagree(true);
+//            } else {
+//                voteOutputDTO.setDisagree(false);
+//            }
+//        }
+//        return voteOutputDTO;
     }
 
 }

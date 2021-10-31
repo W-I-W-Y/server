@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import wiwy.covid.domain.Vote;
 
-@Getter @Setter
+@Getter
 public class VoteOutputDTO {
 
     private Long voteId;
@@ -12,8 +12,6 @@ public class VoteOutputDTO {
     private int agreeCnt;
     private int disagreeCnt;
     private String createDate;
-    private boolean isAgree;
-    private boolean isDisagree;
 
     protected VoteOutputDTO() {
     }
