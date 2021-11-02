@@ -26,6 +26,7 @@ dependencies {
 //	implementation 'org.thymeleaf.extfras:thymeleaf-extras-springsecurity5'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation group: 'com.auth0', name: 'java-jwt', version: '3.18.1'
+    implementation group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.3'
     compileOnly 'org.projectlombok:lombok'

@@ -1,4 +1,4 @@
-package wiwy.covid.apicall;
+package wiwy.covid.apicall.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;

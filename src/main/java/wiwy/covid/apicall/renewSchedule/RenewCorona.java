@@ -1,10 +1,11 @@
-package wiwy.covid.apicall;
+package wiwy.covid.apicall.renewSchedule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import wiwy.covid.apicall.ApiExplorer;
 
 import java.io.IOException;
 import java.time.LocalDate;

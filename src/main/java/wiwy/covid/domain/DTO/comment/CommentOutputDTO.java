@@ -19,6 +19,8 @@ public class CommentOutputDTO {
     private int hates;
     private Long postId;
     private boolean isAuthor = false;
+    private boolean isLike = false;
+    private boolean isHate = false;
 
     public CommentOutputDTO(Comment comment) {
         this.id = comment.getId();
@@ -36,5 +38,13 @@ public class CommentOutputDTO {
 
     public void setAuthor(boolean author) {
         this.isAuthor = author;
+    }
+
+    public void setHate(boolean hate) {
+        isHate = hate;
+    }
+
+    public void setLike(boolean like) {
+        isLike = like;
     }
 }

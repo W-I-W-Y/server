@@ -1,22 +1,18 @@
 package wiwy.covid.config;
 
 import lombok.RequiredArgsConstructor;
-import org.dom4j.io.STAXEventReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.filter.CorsFilter;
-import wiwy.covid.apicall.AbrCoronaComparator;
-import wiwy.covid.apicall.CoronaDataComparator;
+import wiwy.covid.apicall.comparator.AbrCoronaComparator;
+import wiwy.covid.apicall.comparator.CoronaDataComparator;
 import wiwy.covid.config.auth.PrincipalDetailsService;
 import wiwy.covid.config.jwt.JwtAuthenticationFilter;
 import wiwy.covid.config.jwt.JwtAuthorizationFilter;

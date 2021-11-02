@@ -32,6 +32,8 @@ public class PostController {
     private final CommentRepository commentRepository;
     private final LikePostRepository likePostRepository;
     private final HatePostRepository hatePostRepository;
+    private final LikeCommentRepository likeCommentRepository;
+    private final HateCommentRepository hateCommentRepository;
 
 
     // 특정 포스트 보기
@@ -50,6 +52,14 @@ public class PostController {
             for (CommentOutputDTO commentOutputDTO : collect) {
                 if (member.getId().equals(commentOutputDTO.getMemberId())) {
                     commentOutputDTO.setAuthor(true);
+                }
+                Optional<LikeComment> commentLike = likeCommentRepository.findByCommentIdAndMemberId(commentOutputDTO.getId(), member.getId());
+                Optional<HateComment> commentHate = hateCommentRepository.findByCommentIdAndMemberId(commentOutputDTO.getId(), member.getId());
+                if (commentLike.isPresent()) {
+                    commentOutputDTO.setLike(true);
+                }
+                if (commentHate.isPresent()) {
+                    commentOutputDTO.setHate(true);
                 }
             }
             if (isLike.isPresent()) {

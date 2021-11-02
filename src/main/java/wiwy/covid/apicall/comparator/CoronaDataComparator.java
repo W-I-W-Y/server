@@ -1,4 +1,4 @@
-package wiwy.covid.apicall;
+package wiwy.covid.apicall.comparator;
 
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.coronadto.CoronaData;

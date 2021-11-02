@@ -13,6 +13,7 @@ import wiwy.covid.apicall.clinicdto.Clinic;
 import wiwy.covid.apicall.coronadto.CoronaData;
 import wiwy.covid.apicall.coronadto.Response;
 import wiwy.covid.apicall.dismsgdto.DisasterMsg;
+import wiwy.covid.apicall.repository.*;
 import wiwy.covid.apicall.vaccinedto.Vaccine;
 
 import javax.transaction.Transactional;
@@ -22,8 +23,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 

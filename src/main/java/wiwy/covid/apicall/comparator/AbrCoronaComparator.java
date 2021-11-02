@@ -1,4 +1,4 @@
-package wiwy.covid.apicall;
+package wiwy.covid.apicall.comparator;
 
 import org.springframework.context.annotation.Bean;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
