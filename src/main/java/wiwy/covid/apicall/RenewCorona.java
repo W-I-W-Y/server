@@ -51,4 +51,12 @@ public class RenewCorona {
         apiExplorer.fetchingAbrCorona(curDate,curDate);
         log.info("renew end");
     }
+
+//    @Scheduled(cron = "0 0/1 * * * *") // 30분마다
+    public void renewClinic() throws IOException {
+
+        log.info("fetching clinic start");
+//        apiExplorer.fetchClinic();
+        log.info("fetching clinic end");
+    }
 }

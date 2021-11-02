@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import wiwy.covid.apicall.abroadcoronadto.AbrCoronaDto;
 import wiwy.covid.apicall.abroadcoronadto.AbrResponse;
+import wiwy.covid.apicall.clinicdto.Clinic;
 import wiwy.covid.apicall.coronadto.CoronaData;
 import wiwy.covid.apicall.coronadto.Response;
 import wiwy.covid.apicall.dismsgdto.DisasterMsg;
@@ -34,6 +35,7 @@ public class ApiExplorer {
     private final CoronaRepository coronaRepository;
     private final DisMsgRepository disMsgRepository;
     private final VaccineRepository vaccineRepository;
+    private final ClinicRepository clinicRepository;
     private final AbrCoronaRepository abrCoronaRepository;
     private ObjectMapper xmlMapper = new XmlMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 //    private ObjectMapper xmlMapper = new XmlMapper();
@@ -261,7 +263,6 @@ public class ApiExplorer {
         if(abrResponse.getBody().getTotalCount() != 0 && abrResponse.getHeader().getResultCode() == 0) {
             if(abrResponse.getBody().getItems() != null) {
                 List<AbrCoronaDto> items = abrResponse.getBody().getItems();
-                System.out.println(items.toString());
                 validateAbrCoronaData(items);
             }
         } else {
@@ -299,5 +300,48 @@ public class ApiExplorer {
         }
     }
 
+
+    @Transactional
+    public void fetchClinic() throws IOException {
+//        http://apis.data.go.kr/B551182/pubReliefHospService/getpubReliefHospList?serviceKey=PPcz55RLIRHgBc%2B5Kzjvbqey%2BsWKrDNmUGNinjzzMcrOygzB%2FI8Tin7bENsGHgDV9puW%2BxpcymvgAU79Rl8S5Q%3D%3D&pageNo=1&numOfRows=10&spclAdmTyCd=A0
+        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B551182/pubReliefHospService/getpubReliefHospList"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=PPcz55RLIRHgBc%2B5Kzjvbqey%2BsWKrDNmUGNinjzzMcrOygzB%2FI8Tin7bENsGHgDV9puW%2BxpcymvgAU79Rl8S5Q%3D%3D"); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("700", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("spclAdmTyCd","UTF-8") + "=" + URLEncoder.encode("99", "UTF-8")); /*A0: 국민안심병원/97: 코로나검사 실시기관/99: 코로나 선별진료소 운영기관*/
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        System.out.println("Response code: " + conn.getResponseCode());
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        log.debug("sb.toString() = {}",sb.toString());
+
+        wiwy.covid.apicall.clinicdto.Response response= xmlMapper.readValue(sb.toString(), wiwy.covid.apicall.clinicdto.Response.class);
+
+        if(response.getBody().getTotalCount() != 0 && response.getHeader().getResultCode().equals("00")) {
+            if(response.getBody().getItems() != null) {
+                List<Clinic> items = response.getBody().getItems();
+                for (Clinic item : items) {
+                    clinicRepository.save(item);
+                }
+            }
+        } else {
+            log.warn("Clinic fetch ERROR");
+        }
+
+    }
 
 }
