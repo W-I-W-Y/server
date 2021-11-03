@@ -72,7 +72,7 @@ public class BoardController {
     }
 
     // 지역 게시판 페이지네이션 정보 주기(totalElements, totalPages)
-    @GetMapping("/api/board/region/pagination")
+    @GetMapping("/api/board/sido/pagination")
     public CustomPagination regionPagination(Authentication authentication) {
         Member member = memberService.getMemberFromToken(authentication);
         Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
@@ -121,8 +121,9 @@ public class BoardController {
 
 
     // 지역별 게시판 글 보기
-    @GetMapping("/api/board/region/view/{pageNum}")
+    @GetMapping("/api/board/sido/view/{pageNum}")
     public List<PostOutputDTO> viewRegionBoard(@PathVariable Integer pageNum, Authentication authentication) {
+        log.info("authentication = {}", authentication);
         Member member = memberService.getMemberFromToken(authentication);
         Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
         if (findBoard.isEmpty()) {
