@@ -94,7 +94,7 @@ public class PostController {
     @GetMapping("/api/post/viewByMember/{pageNum}")
     public List<PostOutputDTO> viewPostByMember(Authentication authentication, @PathVariable Integer pageNum) {
         Member findMember = memberService.getMemberFromToken(authentication);
-        if (pageNum == 1) {
+        if (pageNum == 0) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByMember(findMember, pageable);
             List<PostOutputDTO> collect = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());

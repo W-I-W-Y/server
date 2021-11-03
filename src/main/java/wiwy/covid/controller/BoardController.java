@@ -105,7 +105,7 @@ public class BoardController {
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewPostOnBoard : 존재하지 않는 게시판입니다.");
         }
-        if (pageNum == 1) {
+        if (pageNum == 0) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
@@ -121,7 +121,7 @@ public class BoardController {
 
 
     // 지역별 게시판 글 보기
-    @GetMapping("/api/board/sido/view/{pageNum}")
+    @GetMapping("/api/board/s/view/{pageNum}")
     public List<PostOutputDTO> viewRegionBoard(@PathVariable Integer pageNum, Authentication authentication) {
         log.info("authentication = {}", authentication);
         Member member = memberService.getMemberFromToken(authentication);
@@ -129,7 +129,7 @@ public class BoardController {
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewRegionBoard : 존재하지 않는 지역 게시판입니다.");
         }
-        if (pageNum == 1) {
+        if (pageNum == 0) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());

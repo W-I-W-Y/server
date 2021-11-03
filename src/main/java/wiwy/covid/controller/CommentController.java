@@ -58,7 +58,7 @@ public class CommentController {
     @GetMapping("/api/comment/viewByMember/{pageNum}")
     public List<CommentOutputDTO> viewCommentByMember(Authentication authentication, @PathVariable Integer pageNum) {
         Member member = memberService.getMemberFromToken(authentication);
-        if (pageNum == 1) {
+        if (pageNum == 0) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Comment> comments = commentRepository.findByMember(member, pageable);
             List<CommentOutputDTO> collect = comments.stream().map(comment -> new CommentOutputDTO(comment)).collect(Collectors.toList());
