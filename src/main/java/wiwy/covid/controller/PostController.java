@@ -284,4 +284,20 @@ public class PostController {
         return posts;
     }
 
+    // 검색을 통한 게시글명으로 게시글 찾기 (키워드가 포함되면 전부 다 가져옴)
+    @GetMapping("/api/post/search/{searchWord}/{pageNum}")
+    public List<PostOutputDTO> searchPost(@PathVariable String searchWord, @PathVariable int pageNum) {
+        Pageable pageable = PageRequest.of(pageNum - 1, 15, Sort.by("createTime").descending());
+        Page<Post> findPosts = postRepository.findByPostNameContaining(searchWord, pageable);
+        return findPosts.stream().map(findPost -> new PostOutputDTO(findPost)).collect(Collectors.toList());
+    }
+
+    // 검색을 통한 게시글 찾기의 페이지네이션 정보 주기
+    @GetMapping("/api/post/pagination/{searchWord}")
+    public CustomPagination searchPostPagination(@PathVariable String searchWord) {
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+        Page<Post> posts = postRepository.findByPostNameContaining(searchWord, pageable);
+        return new CustomPagination(posts.getTotalElements(), posts.getTotalPages());
+    }
+
 }
