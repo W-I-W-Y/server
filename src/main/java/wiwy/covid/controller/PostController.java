@@ -108,7 +108,7 @@ public class PostController {
     }
 
     // 지역 게시판에 포스트 작성
-    @PostMapping("/api/post/add/region")
+    @PostMapping("/api/post/add/sido")
     public String addRegionPost(@RequestBody PostInputDTO postDTO, Authentication authentication) {
         Member member = memberService.getMemberFromToken(authentication);
         Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
