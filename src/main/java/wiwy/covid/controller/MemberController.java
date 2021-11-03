@@ -49,7 +49,7 @@ public class MemberController {
         if (memberInputDTO.getPassword() != null) {
             if (passwordEncoder.matches(memberInputDTO.getPassword(), findMember.getPassword())) {
 
-                findMember.setPassword(memberInputDTO.getPassword());
+                findMember.setPassword(memberInputDTO.getNewPassword());
 
             } else {
                 // 기존의 비밀번호를 틀림

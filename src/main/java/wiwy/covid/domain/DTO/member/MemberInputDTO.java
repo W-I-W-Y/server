@@ -7,6 +7,7 @@ public class MemberInputDTO {
 
     private String username;
     private String password;
+    private String newPassword;
     private String email;
     private String region;
 }
