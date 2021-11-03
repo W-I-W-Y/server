@@ -13,6 +13,7 @@ import wiwy.covid.domain.DTO.board.BoardDTO;
 import wiwy.covid.domain.Member;
 import wiwy.covid.domain.Post;
 import wiwy.covid.domain.DTO.post.PostOutputDTO;
+import wiwy.covid.paging.CustomPagination;
 import wiwy.covid.repository.BoardRepository;
 import wiwy.covid.repository.PostRepository;
 import wiwy.covid.service.MemberService;
@@ -70,6 +71,33 @@ public class BoardController {
         }
     }
 
+    // 지역 게시판 페이지네이션 정보 주기(totalElements, totalPages)
+    @GetMapping("/api/board/region/pagination")
+    public CustomPagination regionPagination(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Optional<Board> findBoard = boardRepository.findByBoardName(member.getRegion());
+        if (findBoard.isEmpty()) {
+            throw new IllegalStateException("pagination : 존재하지 않는 게시판입니다.");
+        }
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+        Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+
+        return new CustomPagination(posts.getTotalElements(), posts.getTotalPages());
+    }
+
+    // 페이지네이션 정보 주기(totalElements, totalPages)
+    @GetMapping("/api/board/{boardId}/pagination")
+    public CustomPagination pagination(@PathVariable Long boardId) {
+        Optional<Board> findBoard = boardRepository.findById(boardId);
+        if (findBoard.isEmpty()) {
+            throw new IllegalStateException("pagination : 존재하지 않는 게시판입니다.");
+        }
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+        Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
+
+        return new CustomPagination(posts.getTotalElements(), posts.getTotalPages());
+    }
+
     // 해당 게시판의 게시글 목록 보기
     @GetMapping("/api/board/{boardId}/view/{pageNum}")
     public List<PostOutputDTO> viewPostOnBoard(@PathVariable Long boardId, @PathVariable Integer pageNum) {
@@ -77,14 +105,14 @@ public class BoardController {
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewPostOnBoard : 존재하지 않는 게시판입니다.");
         }
-        if (pageNum == null) {
+        if (pageNum == 1) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
 
         } else {
-            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Pageable pageable = PageRequest.of(pageNum-1, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
@@ -100,14 +128,14 @@ public class BoardController {
         if (findBoard.isEmpty()) {
             throw new IllegalStateException("viewRegionBoard : 존재하지 않는 지역 게시판입니다.");
         }
-        if (pageNum == null) {
+        if (pageNum == 1) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
 
         } else {
-            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Pageable pageable = PageRequest.of(pageNum-1, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByBoard(findBoard.get(), pageable);
             List<PostOutputDTO> postDTOs = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return postDTOs;
