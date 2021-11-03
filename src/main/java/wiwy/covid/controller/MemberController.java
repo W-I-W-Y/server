@@ -47,7 +47,8 @@ public class MemberController {
 
         // 비밀번호 수정 함
         if (memberInputDTO.getPassword() != null) {
-            if (memberInputDTO.getPassword().equals(findMember.getPassword())) {
+            if (passwordEncoder.matches(memberInputDTO.getPassword(), findMember.getPassword())) {
+
                 findMember.setPassword(memberInputDTO.getPassword());
 
             } else {

@@ -17,6 +17,7 @@ public class MemberDTO {
     private String email;
 
     private String role; // ROLE_USER, ROLE_ADMIN
+    private String region;
 
     private Timestamp createDate;
 
@@ -25,6 +26,7 @@ public class MemberDTO {
         this.username = member.getUsername();
         this.password = null;
         this.email = member.getEmail();
+        this.region = member.getRegion();
         List<String> memberRoles = member.getRoleList();
         if (memberRoles.contains("ROLE_ADMIN")) {
             this.role = "admin";

@@ -11,4 +11,6 @@ public class WebScraper {
 
     private final ObjectMapper objectMapper;
     private final ResourceLoader resourceLoader;
+    private final String URL = "https://www.safekorea.go.kr/idsiSFK/neo/sfk/cs/sfc/dis/disasterMsgList.jsp?menuSeq=111111";
+
 }
