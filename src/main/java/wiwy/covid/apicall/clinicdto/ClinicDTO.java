@@ -18,7 +18,15 @@ public class ClinicDTO {
         this.hospTyTpCd = clinic.getHospTyTpCd();
         this.sgguNm = clinic.getSgguNm();
         this.sidoNm = clinic.getSidoNm();
-        this.spclAdmTyCd = clinic.getSpclAdmTyCd();
+        if (clinic.getSpclAdmTyCd().equals("A0")) {
+            this.spclAdmTyCd = "국민안심병원";
+        } else if (clinic.getSpclAdmTyCd().equals("97")) {
+            this.spclAdmTyCd = "코로나검사 실시기관";
+        } else if (clinic.getSpclAdmTyCd().equals("99")) {
+            this.spclAdmTyCd = "코로나 선별진료소 운영기관";
+        } else {
+            this.spclAdmTyCd = null;
+        }
         this.telno = clinic.getTelno();
         this.yadmNm = clinic.getYadmNm();
     }
