@@ -13,6 +13,7 @@ import wiwy.covid.domain.DTO.comment.CommentOutputDTO;
 import wiwy.covid.domain.DTO.post.PostAndCommentDTO;
 import wiwy.covid.domain.DTO.post.PostInputDTO;
 import wiwy.covid.domain.DTO.post.PostOutputDTO;
+import wiwy.covid.paging.CustomPagination;
 import wiwy.covid.repository.*;
 import wiwy.covid.service.MemberService;
 
@@ -80,17 +81,26 @@ public class PostController {
         }
     }
 
+    // 한 유저가 작성한 포스트 전체 보기의 페이지네이션 정보 주기
+    @GetMapping("/api/post/viewByMember/pagination")
+    public CustomPagination viewByMemberPagination(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+        Page<Post> posts = postRepository.findByMember(member, pageable);
+        return new CustomPagination(posts.getTotalElements(), posts.getTotalPages());
+    }
+
     // 한 유저가 작성한 포스트 전체 보기
     @GetMapping("/api/post/viewByMember/{pageNum}")
     public List<PostOutputDTO> viewPostByMember(Authentication authentication, @PathVariable Integer pageNum) {
         Member findMember = memberService.getMemberFromToken(authentication);
-        if (pageNum == null) {
+        if (pageNum == 1) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByMember(findMember, pageable);
             List<PostOutputDTO> collect = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return collect;
         } else {
-            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Pageable pageable = PageRequest.of(pageNum-1, 15, Sort.by("createTime").descending());
             Page<Post> posts = postRepository.findByMember(findMember, pageable);
             List<PostOutputDTO> collect = posts.stream().map(post -> new PostOutputDTO(post)).collect(Collectors.toList());
             return collect;
@@ -224,6 +234,15 @@ public class PostController {
         return "submitHate";
     }
 
+    // 좋아요를 누른 게시글 목록 보기 페이지네이션 정보 주기
+    @GetMapping("/api/post/likeByMember/pagination")
+    public CustomPagination likeByMemberPagination(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("id").descending());
+        Page<LikePost> lps = likePostRepository.findByMemberId(member.getId(), pageable);
+        return new CustomPagination(lps.getTotalElements(), lps.getTotalPages());
+    }
+
     // 좋아요를 누른 게시글 목록 보기
     @GetMapping("/api/post/likeByMember")
     public List<PostOutputDTO> likePostByMember(Authentication authentication) {
@@ -238,6 +257,15 @@ public class PostController {
             }
         }
         return posts;
+    }
+
+    // 싫어요를 누른 게시글 목록 보기 페이지네이션 정보 주기
+    @GetMapping("/api/post/hateByMember/pagination")
+    public CustomPagination hateByMemberPagination(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("id").descending());
+        Page<HatePost> hps = hatePostRepository.findByMemberId(member.getId(), pageable);
+        return new CustomPagination(hps.getTotalElements(), hps.getTotalPages());
     }
 
     // 싫어요를 누른 게시글 목록 보기

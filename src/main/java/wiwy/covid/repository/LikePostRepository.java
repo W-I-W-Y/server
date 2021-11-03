@@ -1,5 +1,7 @@
 package wiwy.covid.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +24,6 @@ public interface LikePostRepository extends JpaRepository<LikePost, Long> {
 
     @Query(value = "select * from like_post l where l.post_id = :postId and l.member_id = :memberId",nativeQuery = true)
     Optional<LikePost> findByPostIdAndMemberId(@Param("postId") Long postId, @Param("memberId") Long memberId);
+
+    Page<LikePost> findByMemberId(Long memberId, Pageable pageable);
 }

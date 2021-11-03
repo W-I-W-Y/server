@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import wiwy.covid.domain.*;
 import wiwy.covid.domain.DTO.comment.CommentInputDTO;
 import wiwy.covid.domain.DTO.comment.CommentOutputDTO;
+import wiwy.covid.paging.CustomPagination;
 import wiwy.covid.repository.CommentRepository;
 import wiwy.covid.repository.HateCommentRepository;
 import wiwy.covid.repository.LikeCommentRepository;
@@ -44,17 +45,26 @@ public class CommentController {
         return "addComment";
     }
 
+    // 자신이 작성한 댓글 보기 페이지네이션 정보 주기
+    @GetMapping("/api/comment/viewByMember/pagination")
+    public CustomPagination viewCommentByMemberPagination(Authentication authentication) {
+        Member member = memberService.getMemberFromToken(authentication);
+        Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
+        Page<Comment> comments = commentRepository.findByMember(member, pageable);
+        return new CustomPagination(comments.getTotalElements(), comments.getTotalPages());
+    }
+
     // 자신이 작성한 댓글 보기
     @GetMapping("/api/comment/viewByMember/{pageNum}")
     public List<CommentOutputDTO> viewCommentByMember(Authentication authentication, @PathVariable Integer pageNum) {
         Member member = memberService.getMemberFromToken(authentication);
-        if (pageNum == null) {
+        if (pageNum == 1) {
             Pageable pageable = PageRequest.of(0, 15, Sort.by("createTime").descending());
             Page<Comment> comments = commentRepository.findByMember(member, pageable);
             List<CommentOutputDTO> collect = comments.stream().map(comment -> new CommentOutputDTO(comment)).collect(Collectors.toList());
             return collect;
         } else {
-            Pageable pageable = PageRequest.of(pageNum, 15, Sort.by("createTime").descending());
+            Pageable pageable = PageRequest.of(pageNum-1, 15, Sort.by("createTime").descending());
             Page<Comment> comments = commentRepository.findByMember(member, pageable);
             List<CommentOutputDTO> collect = comments.stream().map(comment -> new CommentOutputDTO(comment)).collect(Collectors.toList());
             return collect;
