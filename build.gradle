@@ -29,6 +29,7 @@ dependencies {
     implementation group: 'org.jsoup', name: 'jsoup', version: '1.11.3'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.3'
+    implementation 'org.projectlombok:lombok:1.18.20'
     compileOnly 'org.projectlombok:lombok'
 
 
